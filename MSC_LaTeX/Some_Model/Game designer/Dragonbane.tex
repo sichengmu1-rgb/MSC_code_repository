@@ -1,0 +1,135 @@
+\documentclass[
+    % blackwhite
+]{dragonbane-supplement}
+%% ================ TITLE ================ %%
+\title{Dragonbane Supplement}
+\subtitle{A LaTeX-Template for Dragonbane}
+\author{Sibling Dex}
+\version{2024-07}
+\credits{
+    This game supplement was created under Fria Ligan AB’s \href{https://freeleaguepublishing.com/wp-content/uploads/2023/11/Dragonbane-License-Agreement.pdf}{\emph{Dragonbane Third Party Supplement License}} to be used with the core rules of \textit{Dragonbane}.
+    
+    This game supplement is neither affiliated with, sponsored, or endorsed by Fria Ligan AB.
+    
+    The illustration used is "The Jabberwocky" by John Tenniel (Public Domain).
+}
+%% ================ DOCUMENT ================ %%
+\begin{document}
+\maketitle
+
+\partcolor{Maroon}
+\partimage{img/Jabberwocky.jpg}
+\part{Instructions}
+
+\chapter{Document Class Features}
+
+\begin{segment}
+
+\begin{quote}
+    "Quotes are useful to provide a short and flavourful introduction to a topic at the top of a new section or chapter."
+
+    --The Author (always give credit)
+\end{quote}
+
+\subsection{Parts}
+The \texttt{part} command generates a full-page heading with space for an image, as seen on the page before this one. Use the \textit{partimage} command to set the image used on the page. Parts are also a good level to use the \textit{partcolor} command to set the accent colour featured in many of the class's elements.
+
+\subsection{Chapters}
+The \texttt{chapter} command produces a large, accent-coloured, fancy title, such as the one on this page. Apart from its decoration, the chapter heading looks like the other section titles, set by the \texttt{segment} environment.
+
+
+\end{segment}
+\begin{segment}[Segments]
+
+The \texttt{segment} environment generates a two-column layout. This is an easier way than the \texttt{twocolumn} option to create a two-column document with many column-spanning elements, such as tables. Remember to end your segments. Otherwise, you will get error messages.
+
+\paragraph{With Heading:}
+Segments take an optional argument that generates a column-spanning \texttt{section} heading in green, as above. This is the main way to generate section headings, alternatively, you can also use the \texttt{section} command. In that case, be careful to place it \emph{outside} any \texttt{segment} environment, or you will get an oddly placed, one-column title.
+
+
+\paragraph{Without Heading:}
+The optional argument can also be omitted to generate no heading, as after the table below.
+
+\subsection{Subsections}
+The \texttt{subsection} command generates the standard bold-faced, left-aligned heading you see above this paragraph. Use them to divide your longer texts into smaller chunks to provide a nice orientation for the reader.
+
+\subsection{Paragraphs}
+The smallest defined division in this document class is the \texttt{paragraph}. This command generated an inline bold heading that is best used for an unnumbered list of entries that are too long to put in an actual list environment.
+
+\paragraph{This is a Paragraph:}
+A nice way to use paragraphs is to add a colon at the end of the heading, as seen here.
+\end{segment}
+
+\begin{tablebox}{Tablebox}
+\begin{tabulary}{\linewidth}{ c l c L }
+    \textbf{DICE} & \textbf{LABEL} & \textbf{ALIGNMENT} & \textbf{DESCRIPTION} \\
+    \hline
+    1 & Dice & Center (c) & If you want a table to be rollable, use the first column as the die or dice column. Give it a header denoting the die/dice used, and number the rows. \\
+    2 & Label & Left (l) & The first or second column of a table should be the label of the entry. This gives a short and meaningful name to the entry in the row. \\
+    3 & Score & Center (c) & You can add several narrower columns for short, standardized scores, such as price, availability, durability, etc. \\
+    4 & Description & Left (L) & The typically last column in a table is a longer description of the entry. Use a breaking alignment for this, so the description can be more than one line. \\
+\end{tabulary}
+\end{tablebox}
+
+\begin{segment}
+To get a two-column environment after a wide tablebox, simplply start a new \texttt{segment} environment. This does not require a title, as in this example.
+
+When doing so, be aware that two-column environments look nicer if they have a little more text, e.g., multiple paragraphs, so the columns can wrap along the breaking points of the text and not gereate orphan or widow lines, as they do here.
+\end{segment}
+
+%% ================================================================ %%
+
+\partcolor{DemonGreen} % This is the default accent colour
+\begin{segment}[Boxes]
+
+There are three types of box provided by this class: the Demonbox, Dragonbox and Emptybox. These are special environments that can be used to highlight special rules or important information in a compact way. These boxes are not floats but are placed as part of the text. Therefore, they can be placed both inside a \texttt{segment} environment, to produce a one-column wide box, or outside, to create a two-column spanning box.
+
+\begin{dragonbox}{Dragonbox}
+\begin{itemize}
+    \item \textbf{These Rules Are:} Obligatory
+\end{itemize}
+    This is a \texttt{dragonbox}, it can be used to highlight important information in a compact and noticeable way.
+    
+    It can be used, for example, to typeset a Heroic Ability. In that case, you can use an \texttt{itemize} list, as above, to note the Willpower cost for the ability.
+\end{dragonbox}
+
+\begin{emptybox}{Emptybox}
+    This is an \texttt{emptybox}, it features the same heading as a \texttt{demonbox} but not the coloured background. It is used in the Tablebox environment but can also be used by itself.
+\end{emptybox}
+
+\begin{demonbox}{Demonbox}
+\begin{itemize}
+    \item \textbf{These Rules Are:} Optional
+\end{itemize}
+    This is a \texttt{demonbox}, they are used to add information about optional rules.
+
+    The \texttt{demonbox} is fully coloured in the current accent colour and can be a drain on printer toner or ink. It is generally a good approach to use these boxes sparingly. A restrained use of boxes in general also prevents the layout from looking cluttered.
+\end{demonbox}
+\end{segment}
+
+
+\begin{dragonbox}{Wide Boxes}
+\begin{segment}
+Both \texttt{dragonbox} and \texttt{demonbox} can be used outside a \texttt{segment} environment to make it span the whole page width. When using text inside a wide box, it is good practice to use a \texttt{segment} environment inside the box to get a two column layout in the box and prevent overly long lines. 
+
+\subsection{Subsection}
+Lower level headings such as \texttt{subsection} and \texttt{paragraph} can be used inside boxes.
+
+\paragraph{Paragraph:}
+Using these headings can help make the text inside a box more ordered and provide a better overview.
+\end{segment}
+\end{dragonbox}
+
+%% ================================================================ %%
+
+\begin{segment}[Package Options]
+\subsection{Generic Options}
+You can use all class options available to the standard \texttt{report} document class included in LaTeX.
+
+\paragraph{Papersize:} You can use the class with paper sizes other than A4, but be sure to keep the \texttt{textwidth} at 16cm, otherwise the headers will get uncentered.
+
+\subsection{Black and White}
+You can use the \texttt{blackwhite} option in the \texttt{documentclass} command to generate the document in black and white colours. When doing so, you have to manually set monochrome images, the option cannot change included images.
+\end{segment}
+
+\end{document}

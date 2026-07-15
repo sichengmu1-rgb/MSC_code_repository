@@ -1,0 +1,286 @@
+################################################################################
+#                                                                              #
+#  LAMMPS 输入文件：bcc 铁的磁矩-晶格耦合自旋动力学模拟                          #
+#  (bcc iron spin-lattice dynamics simulation)                                 #
+#                                                                              #
+#  物理模型：bcc 结构铁晶体中，原子磁矩在有限温度下的进动与弛豫过程               #
+#  核心方法：耦合了晶格自由度与自旋自由度的NVE系综（nve/spin lattice moving）     #
+#  应用场景：研究铁磁材料的磁化动力学、自旋波激发、温度效应等                     #
+#                                                                              #
+################################################################################
+
+# ========================== 初始化与单位制 ====================================
+# clear 命令清空LAMMPS内存中所有之前定义的设置，确保从一个干净的状态开始。
+# 如果不加这一行，后续在同一会话中运行多个输入脚本时会残留前一个脚本的设置。
+clear
+
+# units metal: 设置单位制为"metal"（金属单位制）。
+# 在此单位制下：
+#   长度单位 = Ångström (Å)
+#   质量单位 = g/mol（克每摩尔）
+#   时间单位 = picoseconds (ps, 皮秒)
+#   能量单位 = eV（电子伏特）
+#   压力单位 = bars (巴)
+#   温度单位 = K (开尔文)
+# 选择metal单位制是因为我们要模拟金属铁体系，适合用eV和Å来表征原子间相互作用。
+units           metal
+
+# atom_style spin: 设置原子类型为"spin"（自旋原子类型）。
+# spin类型在标准atomic类型的基础上，为每个原子额外存储了以下属性：
+#   - sp: 磁矩（自旋）矢量的x, y, z分量
+#   - fm: 作用在磁矩上的力（等效磁场）的x, y, z分量
+#   以及自旋-晶格耦合所需的其他自由度（如角速度等）
+# 这是使用LAMMPS SPIN package进行磁性模拟的基础。
+atom_style      spin
+
+# ========================== 模拟盒子与维度设置 ================================
+
+# dimension 3: 设置模拟为三维（3D）。
+# 可选值：1, 2, 3。三维意味着原子可以在x, y, z三个方向上运动。
+dimension       3
+
+# boundary p p p: 三个方向都使用周期性边界条件（Periodic Boundary Condition, PBC）。
+# p = periodic, 粒子从盒子一侧离开时会从对面一侧重新进入，消除表面效应。
+# 三个p分别对应x, y, z方向。这模拟了无限大块体材料。
+boundary        p p p
+
+# atom_modify map array: 设置原子映射方式为array（数组映射）。
+# 这是SPIN package在串行算法（sametag算法）中所必需的设置。
+# 在自旋模拟中，需要快速通过原子ID查找原子，array映射将原子ID直接作为
+# 数组索引（而非hash查找），代价是消耗更多内存，但查找速度更快。
+atom_modify     map array
+
+# ========================== 构建晶体结构 =====================================
+
+# lattice bcc 2.8665: 定义晶格类型为bcc（体心立方，Body-Centered Cubic），
+# 晶格常数为 2.8665 Å —— 这是α-Fe（铁素体）在室温下的实验晶格常数。
+# bcc晶格中每个单胞包含2个原子（8×1/8个角原子 + 1个体心原子）。
+lattice         bcc 2.8665
+
+# region box block 0.0 5.0 0.0 5.0 0.0 5.0: 定义一个名为"box"的矩形区域。
+# 从(0,0,0)到(5,5,5)（单位为晶格常数，即5个晶胞长度）。
+# 实际物理尺寸约为 5×2.8665 = 14.3325 Å 的立方体盒子。
+# 5个bcc晶胞在每个方向约产生 5×5×5×2 = 250 个原子（实际由create_atoms决定）。
+region          box block 0.0 5.0 0.0 5.0 0.0 5.0
+
+# create_box 1 box: 在"box"区域内创建模拟盒子，包含1种原子类型（类型1）。
+# 这一步只分配盒子结构、边界、域分解等，尚未在盒子中放置原子。
+create_box      1 box
+
+# create_atoms 1 box: 在"box"区域内的所有晶格点上放置类型1的原子。
+# 对于bcc晶格，会在5×5×5个单胞的晶格格点上各放置1个原子（体心+角顶），
+# 共约 2×125 = 250 个原子（精确数量取决于边界处理）。
+create_atoms    1 box
+
+# ========================== 原子属性设置 =====================================
+
+# mass 1 55.845: 设置类型1原子的质量为 55.845 g/mol。
+# 这是铁（Fe）的标准原子量。在metal单位制中，质量单位为g/mol。
+mass            1 55.845
+
+# set group all spin/random 31 2.2:
+# 为所有原子的磁矩（自旋）赋予随机方向的初始值。
+#   - group all: 对所有原子操作
+#   - spin/random: 随机化自旋方向（在单位球面上均匀分布）
+#   - 31: 随机数种子，用于复现结果
+#   - 2.2: 每个自旋的磁矩大小（单位为Bohr magneton，玻尔磁子μ_B）
+#     bcc铁的原子磁矩约为2.2 μ_B，这是铁磁性的来源。
+# 注意：下面一行注释掉的是铁磁有序化的初始设置（统一沿z轴），
+# 此处选择随机取向是为了研究高温下的自旋动力学行为。
+set             group all spin/random 31 2.2
+# set           group all spin 2.2 0.0 0.0 1.0     # 备用：统一沿+z方向
+
+# velocity all create 100 4928459 rot yes dist gaussian:
+# 为所有原子创建初始速度。
+#   - all: 对所有原子设置
+#   - create 100: 初始温度设为 100 K（低温，接近铁磁基态）
+#   - 4928459: 随机数种子
+#   - rot yes: 同时为自旋的旋转自由度（角速度）赋予初始值
+#     这是spin类型特有的，与晶格运动耦合所必需
+#   - dist gaussian: 速度分布服从高斯分布（即Maxwell-Boltzmann分布）
+velocity        all create 100 4928459 rot yes dist gaussian
+
+# ========================== 势函数（相互作用）设置 ==========================
+
+# pair_style hybrid/overlay eam/alloy spin/exchange 3.5:
+# 使用hybrid/overlay混合势函数风格，将两种不同的相互作用叠加：
+#
+#   (1) eam/alloy: 嵌入原子势（Embedded Atom Method, EAM），用于描述
+#       金属中的原子间相互作用（非磁性部分）。EAM包含：
+#       - 对势项（pair potential）: 原子对之间的排斥
+#       - 嵌入能项（embedding energy）: 原子嵌入局域电子密度的能量
+#       它能很好地描述金属的弹性、缺陷、表面等性质。
+#
+#   (2) spin/exchange 3.5: 海森堡交换相互作用（Heisenberg exchange），
+#       用于描述自旋之间的量子力学交换耦合。
+#       - 截断半径 3.5 Å: 交换相互作用在此距离之外被截断
+#       交换相互作用的形式为: -J(r_ij) * S_i · S_j
+#       即两个自旋矢量S_i和S_j之间的点积，耦合强度J随距离变化。
+pair_style      hybrid/overlay eam/alloy spin/exchange 3.5
+
+# pair_coeff * * eam/alloy Fe_Mishin2006.eam.alloy Fe:
+# 设置EAM势函数的系数。
+#   - * *: 对所有原子类型对适用（只有一个类型，所以是1-1对）
+#   - eam/alloy: 指定这是EAM势的系数
+#   - Fe_Mishin2006.eam.alloy: EAM势函数文件（Mishin等人2006年发表的铁的EAM势）
+#     此文件包含了对势和嵌入能的参数化数据
+#   - Fe: 元素名称，对应势文件中的元素标签
+pair_coeff      * * eam/alloy Fe_Mishin2006.eam.alloy Fe
+
+# pair_coeff * * spin/exchange exchange 3.4 0.02726 0.2171 1.841 offset yes:
+# 设置自旋交换相互作用的系数。
+#   - * *: 对所有原子类型对适用
+#   - spin/exchange: 指定这是自旋交换势的系数
+#   - exchange: 交换相互作用函数形式
+#   - 3.4: 交换相互作用的截断半径（Å），距此之外J(r)=0
+#   - 0.02726: J_0 参数（eV），交换耦合的常数前置因子
+#   - 0.2171: α 参数（1/Å），控制交换耦合随距离的衰减速率
+#   - 1.841: β 参数（Å），交换耦合中的相移参数
+#   - offset yes: 在截断半径处将势能偏移到0，避免势能不连续
+# 交换耦合函数大概形式: J(r) = J_0 * exp(-α*(r-β)) 或类似形式
+pair_coeff      * * spin/exchange exchange 3.4 0.02726 0.2171 1.841 offset yes
+
+# ========================== 近邻列表设置 =====================================
+
+# neighbor 0.1 bin: 设置近邻列表的构建参数。
+#   - 0.1: skin distance（皮肤距离，Å）。近邻列表比截断半径多出
+#     这个距离，超出skin的原子移动才会触发重建列表。0.1 Å是较小的值，
+#     适合低温模拟（原子热振动幅度小）。
+#   - bin: 使用binning算法构建近邻列表，将盒子分成格子加速查找。
+neighbor        0.1 bin
+
+# neigh_modify every 10 check yes delay 20:
+# 修改近邻列表的更新策略。
+#   - every 10: 每10步检查一次是否需要重建近邻列表
+#   - check yes: 启用检查机制（检查是否有原子移动超过skin/2距离）
+#   - delay 20: 在前20步内不检查，因为初始阶段原子可能移动较大
+neigh_modify    every 10 check yes delay 20
+
+# ========================== 时间积分 Fix 设置 ================================
+
+# fix 1 all precession/spin zeeman 0.0 0.0 0.0 1.0:
+# Fix 1: 自旋进动（precession/spin）+ 外磁场（Zeeman项）
+#   - precession/spin: 计算自旋在有效场下的Larmor进动
+#     进动方程: dS_i/dt = -g*μ_B * S_i × H_eff （S_i绕H_eff旋转）
+#   - zeeman 0.0 0.0 0.0 1.0: 施加塞曼（Zeeman）外磁场
+#     磁场方向矢量为 (0,0,1)，即沿+z轴方向（0, 0, 1）
+#     单位为 Tesla（根据设置），此处外场强度由矢量的模决定
+#     实际上这里磁场矢量是 (0,0,1) Tesla，沿z轴正方向
+#   Zeeman能量: E = -μ·B，自旋倾向于沿外磁场方向排列
+fix             1 all precession/spin zeeman 0.0 0.0 0.0 1.0
+
+# fix_modify 1 energy yes:
+# 修改fix 1的设置，启用能量计算。
+#   - energy yes: 让fix贡献的能量（这里是Zeeman能量和交换能量）被计入
+#     系统总能量中，这样thermo输出和能量守恒检查才能包含这些贡献。
+fix_modify     1 energy yes
+
+# fix 2 all langevin/spin 0.0 0.0 21:
+# Fix 2: 自旋的Langevin恒温器（热浴）
+#   - langevin/spin: 对自旋自由度施加Langevin热浴
+#     Langevin方程包含两项：耗散项（摩擦）和随机项（热涨落）
+#     形式: dS_i/dt = ... - γ*S_i × (S_i × H_eff) + S_i × ξ(t)
+#   - 0.0: 初始温度（0表示立即使用目标温度）
+#   - 0.0: 最终温度（0表示立即使用目标温度）
+#   - 21: 阻尼参数（ps^{-1}），控制自旋与热浴的耦合强度
+#     21 ps^{-1} 意味着较强的热浴耦合，自旋温度会较快收敛到目标温度
+#     但这个值非常大，可能用于快速将自旋温度拉到~100K附近
+# 注意：此处初始和最终温度都设为0，意味着温度目标由velocity命令中的
+# 100K决定，langevin/spin维持该温度。
+fix             2 all langevin/spin 0.0 0.0 21
+
+# fix 3 all nve/spin lattice moving:
+# Fix 3: 自旋-晶格耦合的NVE（微正则）系综时间积分器
+#   - nve/spin: 对自旋和晶格自由度同时进行时间积分
+#   - lattice moving: 允许晶格原子移动（不仅是自旋进动）
+#     这意味着原子的坐标和速度与自旋方向同时演化，即：
+#     晶格部分由NVE方程积分（坐标+速度），自旋部分由自旋进动方程积分
+#     能量在晶格动能+晶格势能+自旋交换能+Zeeman能之间守恒（无热浴时）
+#   NVE系综保证总能量守恒，但由于有fix 2的Langevin热浴，
+#   整体上实现的是一个近似的NVT（正则）系综模拟。
+fix             3 all nve/spin lattice moving
+
+# timestep 0.0001: 设置时间步长为 0.0001 ps = 0.1 fs。
+# metal单位制下，时间单位为ps，所以0.0001 ps = 0.1飞秒。
+# 这是非常小的步长，因为：
+#   - 自旋进动频率很高（~THz量级），需要小步长来准确积分
+#   - 铁中声子频率也很高，晶格振动同样需要小的时间步长
+#   典型值在0.1~1 fs范围内。
+timestep        0.0001
+
+# ========================== 计算（Compute）与输出 ============================
+
+# compute out_mag all spin:
+# 计算全系统的自旋（磁矩）相关宏观量。
+# 输出一个向量，包含以下分量：
+#   [1]: 总磁矩的x分量 (μ_B)
+#   [2]: 总磁矩的y分量 (μ_B)
+#   [3]: 总磁矩的z分量 (μ_B)  ← 沿外磁场方向的磁化强度
+#   [4]: 总磁矩的模（norm）, sqrt(mx^2+my^2+mz^2)
+#   [5]: 交换能 (eV)
+#   [6]: 磁熵能 (eV)
+compute         out_mag     all spin
+
+# compute out_pe all pe: 计算系统的总势能（Potential Energy）
+compute         out_pe      all pe
+
+# compute out_ke all ke: 计算系统的总动能（Kinetic Energy）
+compute         out_ke      all ke
+
+# compute out_temp all temp: 计算系统的温度
+compute         out_temp    all temp
+
+# 定义变量，从compute out_mag的向量中提取各个分量：
+# v_magz:   磁矩的z分量（沿外场方向），用于跟踪磁化强度
+# v_magnorm: 磁矩的模（总磁化强度的大小）
+# v_emag:   交换能（自旋间的交换耦合能量）
+# v_tmag:   磁熵能（与自旋无序度相关的熵贡献）
+variable        magz        equal c_out_mag[3]
+variable        magnorm     equal c_out_mag[4]
+variable        emag        equal c_out_mag[5]
+variable        tmag        equal c_out_mag[6]
+
+# thermo_style custom: 自定义热力学输出格式。
+# 每thermo步输出以下量：
+#   step:    当前模拟步数
+#   time:    当前模拟时间（ps）
+#   v_magnorm: 总磁矩的模（监控磁序）
+#   v_tmag:   磁熵能
+#   temp:    系统温度（K）
+#   v_emag:  交换能（eV）
+#   ke:      动能（eV）
+#   pe:      势能（eV）
+#   press:   压力（bar）
+#   etotal:  总能量 = ke + pe + 磁性能量（eV）
+thermo_style    custom step time v_magnorm v_tmag temp v_emag ke pe press etotal
+
+# thermo 50: 每50步输出一次热力学数据到屏幕和日志文件
+thermo          50
+
+# compute outsp all property/atom spx spy spz sp fmx fmy fmz:
+# 计算每个原子的属性，用于dump输出。
+#   spx, spy, spz: 每个原子磁矩（自旋）的x, y, z分量
+#   fmx, fmy, fmz: 每个原子所受磁力（有效场）的x, y, z分量
+# 这些数据可用于可视化自旋构型和分析磁结构。
+compute         outsp all property/atom spx spy spz sp fmx fmy fmz
+
+# dump 1 all custom 100 dump_iron.lammpstrj type x y z c_outsp[1] c_outsp[2] c_outsp[3]:
+# 输出轨迹文件（dump file），包含原子的坐标和自旋信息。
+#   - 1: dump ID号
+#   - all: 输出所有原子
+#   - custom: 自定义输出格式
+#   - 100: 每100步输出一帧
+#   - dump_iron.lammpstrj: 输出文件名
+#   - type: 原子类型
+#   - x y z: 原子的x, y, z坐标
+#   - c_outsp[1] c_outsp[2] c_outsp[3]: 自旋的x, y, z分量
+# 输出的轨迹文件可以用OVITO、VMD等软件可视化磁矩的演化。
+dump            1 all custom 100 dump_iron.lammpstrj type x y z c_outsp[1] c_outsp[2] c_outsp[3]
+
+# ========================== 运行模拟 =========================================
+
+# run 1000: 运行1000步模拟。
+# 总模拟时间 = 1000 × 0.0001 ps = 0.1 ps = 100 fs
+# 这是非常短的时间尺度，适合观察自旋的快速进动动力学。
+# 对于更长的物理过程，需要增加步数。
+run             1000

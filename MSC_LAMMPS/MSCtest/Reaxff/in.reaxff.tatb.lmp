@@ -1,0 +1,205 @@
+# =============================================================================
+#  LAMMPS 输入文件：TATB 体系的 ReaxFF 反应力场 MD 模拟（标准 QEq 版本）
+#  体系化学式：C6H6N6O6（三氨基三硝基苯，TATB，钝感高能炸药）
+#  力场：ReaxFF 反应力场
+#  电荷方法：QEq/ReaxFF（标准电荷平衡）
+#  系综：NVE（微正则系综）
+#  单位制：real（kcal/mol, Angstrom, fs, K, atm）
+#
+#  【TATB vs RDX】
+#  TATB (三氨基三硝基苯) 与 RDX (黑索金) 同为硝胺类炸药，但 TATB 因分子间
+#  强氢键网络而具有极低感度（钝感炸药），热稳定性远优于 RDX。模拟 TATB 热分解
+#  需要更小的时间步长(0.0625 fs)以求准确捕捉氢键网络的动态变化。
+#
+#  【本文件特色功能（RDX文件不具备）】
+#  - reaxff/bonds fix：实时输出化学键信息（键类型、键级）
+#  - reaxff/atom compute：计算每个原子的成键状态
+#  - reaxff/species fix：追踪反应过程中分子物种的生成与消失
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 1. 基本设置
+# -----------------------------------------------------------------------------
+
+units           real                # 单位制=real: kcal/mol, Angstrom, fs, K, atm
+atom_style      charge              # 原子属性=坐标(x,y,z) + 电荷(q)
+read_data       data.tatb           # 读入初始构型: TATB分子坐标、盒子尺寸、电荷、拓扑
+
+# -----------------------------------------------------------------------------
+# 2. 对势：ReaxFF 反应力场
+# -----------------------------------------------------------------------------
+
+pair_style      reaxff control.reax_c.tatb  # 对势=ReaxFF; TATB专用控制文件(截断半径等)
+pair_coeff      * * ffield.reax C H O N     # 力场参数: ffield.reax; 元素映射: C, H, O, N
+                                            # (TATB与RDX元素种类相同, 可共用同一力场文件)
+
+# -----------------------------------------------------------------------------
+# 3. 能量分解
+# -----------------------------------------------------------------------------
+
+compute         reax all pair reaxff        # compute提取ReaxFF对势的14项能量分量
+
+# c_reax[1]  = E_bond    键拉伸能
+# c_reax[2]  = E_atom    原子能(配位修正)
+# c_reax[3]  = E_lp      孤对电子能
+# c_reax[4]  = E_mol     分子能
+# c_reax[5]  = E_val     价角能
+# c_reax[6]  = E_pen     配位惩罚能
+# c_reax[7]  = E_coa     共轭能
+# c_reax[8]  = E_hbond   氢键能          ← TATB的关键项! 分子间强氢键网络主导热稳定性
+# c_reax[9]  = E_tors    扭转能
+# c_reax[10] = E_conj    共轭修正能
+# c_reax[11] = E_vdW     范德华能
+# c_reax[12] = E_Coulomb 库仑能
+# c_reax[13] = E_field   外电场能
+# c_reax[14] = E_QEq     电荷平衡能
+
+variable        eb      equal c_reax[1]     # v_eb   = 键能
+variable        ea      equal c_reax[2]     # v_ea   = 原子能
+variable        elp     equal c_reax[3]     # v_elp  = 孤对电子能
+variable        emol    equal c_reax[4]     # v_emol = 分子能
+variable        ev      equal c_reax[5]     # v_ev   = 价角能
+variable        epen    equal c_reax[6]     # v_epen = 配位惩罚能
+variable        ecoa    equal c_reax[7]     # v_ecoa = 共轭能
+variable        ehb     equal c_reax[8]     # v_ehb  = 氢键能  ← 关注此项看TATB氢键网络变化
+variable        et      equal c_reax[9]     # v_et   = 扭转能
+variable        eco     equal c_reax[10]    # v_eco  = 共轭修正能
+variable        ew      equal c_reax[11]    # v_ew   = 范德华能
+variable        ep      equal c_reax[12]    # v_ep   = 库仑能
+variable        efi     equal c_reax[13]    # v_efi  = 外电场能
+variable        eqeq    equal c_reax[14]    # v_eqeq = 电荷平衡能
+
+# -----------------------------------------------------------------------------
+# 4. 近邻列表
+# -----------------------------------------------------------------------------
+
+neighbor        2.5 bin             # 近邻皮肤=2.5 A; 算法=bin(空间分箱)
+neigh_modify    delay 0 every 5 check no    # 延迟=0(立即建); 每5步强制重建; check no=跳过安全检查
+                                            # TATB步长极小(0.0625 fs), 每5步重建频率实际很高
+
+# -----------------------------------------------------------------------------
+# 5. 系综、电荷平衡、键分析（Fix 区域）
+# -----------------------------------------------------------------------------
+
+fix             1 all nve                   # fix 1: NVE系综(恒N, V, E), 绝热条件模拟热分解
+
+fix             2 all qeq/reaxff 1 0.0 10.0 1.0e-6 reaxff
+                                            # fix 2: 标准 QEq 电荷平衡
+                                            #   参数1: Nevery=1       → 每步执行电荷平衡
+                                            #   参数2: T=0.0          → QEq温度(K), 0=无Fermi展宽(基态)
+                                            #   参数3: 截断=10.0      → 电荷作用截断半径(A)
+                                            #   参数4: 容差=1.0e-6    → 迭代收敛精度
+                                            #   参数5: reaxff         → 使用ReaxFF电负性/硬度参数
+
+fix             4 all reaxff/bonds 5 bonds.reaxff
+                                            # fix 4: 实时输出ReaxFF化学键信息
+                                            #   Nevery=5, 每5步输出一次
+                                            #   输出文件: bonds.reaxff
+                                            #   内容: 每个原子对的键类型、键级(Bond Order)
+                                            #   键级=0 → 无键; =1 → 单键; =2 → 双键; 介于0~1 → 部分键(过渡态!)
+                                            #   通过追踪键级变化可直接"看到"化学反应的发生
+
+compute         bonds all reaxff/atom bonds yes
+                                            # compute: 计算原子的per-atom键合信息
+                                            #   reaxff/atom = ReaxFF原子级计算
+                                            #   bonds yes   = 启用键信息输出
+                                            #   输出: c_bonds 数组, 包含每个原子的成键数据
+                                            #         c_bonds[1]=键类型, [2]=键级, [3]=配位数...
+
+variable        nqeq    equal f_2           # v_nqeq = QEq迭代次数(来自fix 2的返回值)
+
+# -----------------------------------------------------------------------------
+# 6. 键信息输出（Dump 区域）
+# -----------------------------------------------------------------------------
+
+dump 1 all local 5 bonds_local.reaxff c_bonds[1] c_bonds[2] c_bonds[3]
+                                            # dump 1: 输出局部(per-bond)成键信息
+                                            #   local格式=每个键占一行(非per-atom)
+                                            #   每5步输出 → bonds_local.reaxff
+                                            #   输出列:
+                                            #     c_bonds[1] = 键类型(ID of bond type)
+                                            #     c_bonds[2] = 键级(Bond Order, 0~3)
+                                            #     c_bonds[3] = 原子配位数(该键涉及的原子的邻居数)
+
+dump 2 all custom 5 bonds_atom.reaxff id type q c_bonds[*]
+                                            # dump 2: 输出每个原子的成键信息
+                                            #   custom格式=per-atom, 可自定义输出列
+                                            #   每5步输出 → bonds_atom.reaxff
+                                            #   输出列:
+                                            #     id         = 原子全局编号
+                                            #     type       = 原子类型(1=C, 2=H, 3=O, 4=N)
+                                            #     q          = 原子当前电荷
+                                            #     c_bonds[*] = compute bonds返回的全部per-atom键数据
+                                            #                  * 通配符表示输出该compute的所有列
+
+# -----------------------------------------------------------------------------
+# 7. 热力学输出 → log.lammps
+# -----------------------------------------------------------------------------
+
+thermo          5                           # 每5步输出一行热力学数据(因步长很小, 输出频率相当于很高)
+thermo_style    custom step temp epair etotal press &
+                v_eb v_ea v_elp v_emol v_ev v_epen v_ecoa &
+                v_ehb v_et v_eco v_ew v_ep v_efi v_eqeq v_nqeq
+                                            # 自定义18列输出:
+                                            #   step, temp(K), epair(势能), etotal(总能量), press(atm)
+                                            #   v_eb ~ v_eqeq = 14项ReaxFF能量分量
+                                            #   v_nqeq = QEq迭代次数
+
+# -----------------------------------------------------------------------------
+# 8. 时间积分
+# -----------------------------------------------------------------------------
+
+timestep        0.0625                      # 积分步长=0.0625 fs = 1/16 fs
+                                            # 【为什么TATB步长比RDX(1.0 fs)小16倍？】
+                                            # TATB有密集的分子间氢键网络, 氢键振动频率高、势能面陡峭,
+                                            # 需要极小的步长才能准确积分氢键的快速运动, 防止能量漂移。
+                                            # 代价: 同样物理时间需要16倍的计算量。
+
+# -----------------------------------------------------------------------------
+# 9. 图像输出（已注释）
+# -----------------------------------------------------------------------------
+
+#dump           1 all custom 100 dump.reaxff.tatb id type q x y z   # 每100步轨迹, 含原子id/type/电荷/坐标
+#dump           2 all image 5 image.*.jpg type type &               # 每5步JPG快照, 按原子类型着色
+#               axes yes 0.8 0.02 view 60 -30
+#dump_modify    2 pad 3
+#dump           3 all movie 5 movie.mpg type type &                # 每5步MPG电影
+#               axes yes 0.8 0.02 view 60 -30
+#dump_modify    3 pad 3
+
+# -----------------------------------------------------------------------------
+# 10. 分子物种追踪（ReaxFF/species）
+# -----------------------------------------------------------------------------
+
+fix             3 all reaxff/species 1 5 5 species.tatb
+                                            # fix 3: 化学反应物种追踪分析
+                                            # 【功能说明】
+                                            # 在反应模拟中自动识别分子(通过键级判断哪些原子属于同一分子),
+                                            # 追踪每种分子物种的数量随时间的变化。
+                                            #   参数1: Nevery=1     → 每步计算物种
+                                            #   参数2: Nrepeat=5    → 每5步输出一次平均
+                                            #   参数3: Nfreq=5      → 每5步写入一次文件
+                                            #   参数4: species.tatb → 输出文件名前缀
+                                            # 输出文件:
+                                            #   species.tatb       → 物种浓度随时间的演化
+                                            #   species.tatb.out   → 详细的物种列表
+                                            # 典型分析: 观察TATB分子何时开始分解,
+                                            #          出现哪些中间产物(NO2, NO, H2O...),
+                                            #          最终产物是什么(N2, CO2, H2O...)
+
+# -----------------------------------------------------------------------------
+# 11. 运行
+# -----------------------------------------------------------------------------
+
+run             25                          # 运行25步 = 25 × 0.0625 fs = 1.5625 fs; 测试运行
+                                            # 生产模拟通常需 10^5 ~ 10^6 步以覆盖纳秒级反应
+
+# =============================================================================
+#  用法: lmp_mpi -in in.reaxff.tatb
+#  关键输出:
+#    log.lammps          → 热力学数据(温度、能量分量)
+#    bonds.reaxff        → 键分析(fix 4输出)
+#    bonds_local.reaxff  → 局部成键信息(dump 1)
+#    bonds_atom.reaxff   → 原子成键信息(dump 2)
+#    species.tatb        → 物种演化数据(fix 3)
+# =============================================================================

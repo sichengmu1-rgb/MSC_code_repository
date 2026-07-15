@@ -1,0 +1,328 @@
+################################################################################
+#                                                                              #
+#  LAMMPS 输入文件：Lennard-Jones流体的巨正则蒙特卡洛（GCMC）模拟                #
+#  (Grand Canonical Monte Carlo simulation of Lennard-Jones fluid)            #
+#                                                                              #
+#  物理模型：简单LJ流体在巨正则系综下的粒子插入/删除统计                          #
+#  核心方法：GCMC（固定化学势μ、体积V、温度T，粒子数N涨落）                       #
+#  参考基准：Frenkel & Smit《Understanding Molecular Simulation》                #
+#           GCMC Case Study, 图5.8                                              #
+#  模拟条件：T* = 2.0, ρ* ~ 0.5, p* ~ 1.5, μ_ex* ~ 0.0                        #
+#                                                                              #
+################################################################################
+
+# ========================== 参考条件说明（注释块） =============================
+# 以下4行注释说明了本模拟的目标物理条件：
+# T = 2.0:    约化温度 T* = k_B T / ε = 2.0（LJ单位制中ε=1, k_B=1）
+# rho ~ 0.5:  约化密度 ρ* = ρ σ^3 ≈ 0.5，这是中等密度的流体状态
+# p ~ 1.5:    约化压力 p* = p σ^3 / ε ≈ 1.5
+# mu_ex ~ 0.0: 过量化学势（excess chemical potential）约等于0
+#              这意味着 μ = μ_id + μ_ex ≈ μ_id（接近理想气体行为）
+# 这些条件下，系统处于超临界流体状态（T* > T_c* ≈ 1.3）
+# 与Frenkel和Smit经典教材中的GCMC算例相当，是验证GCMC实现的基准算例
+
+# ========================== 可调参数变量 =====================================
+# -var命令行开关允许在运行时动态修改变量值，无需修改脚本。
+# 用法示例：lmp -in in.gcmc.lj.lmp -var mu -3.0 -var temp 1.5
+
+# variable mu index -1.25:
+# 化学势 μ（约化单位，LJ单位制）。
+# mu 控制GCMC中粒子插入/删除的倾向：
+#   - mu越大 → 倾向插入粒子（增加密度）
+#   - mu越小 → 倾向删除粒子（减少密度）
+# -1.25是经验值，在此温度下给出约ρ~0.5的平衡密度。
+variable        mu index -1.25
+
+# variable temp index 2.0:
+# 温度 T* = 2.0（约化单位）。
+# 这是超临界温度（LJ临界温度约为 T_c* ≈ 1.3），体系为均一流体。
+variable        temp index 2.0
+
+# variable disp index 1.0:
+# 最大位移步长（约化单位，σ）。
+# MC位移尝试中将原子随机移动最多±1.0 σ的距离。
+# 这个值影响位移接受率：
+#   - 太小 → 接受率高但相空间探索慢
+#   - 太大 → 接受率低（很多重叠导致拒绝）
+#   目标是使接受率~30-50%以获得最佳采样效率。
+variable        disp index 1.0
+
+# variable lbox index 5.0:
+# 盒子边长（约化单位，σ）。
+# 盒子体积 V = 5.0^3 = 125 σ^3
+# 预期密度~0.5时，N ≈ 0.5×125 ≈ 62.5个粒子（平均）
+variable        lbox index 5.0
+
+# ========================== 全局模型设置 =====================================
+
+# units lj: 设置单位制为Lennard-Jones（约化单位制）。
+# 在此单位制下，所有量都以LJ参数为基准无量纲化：
+#   长度单位 = σ（LJ直径参数）
+#   能量单位 = ε（LJ能量参数，势阱深度）
+#   质量单位 = m（粒子质量）
+#   时间单位 = τ = σ × sqrt(m/ε)
+#   温度单位 = ε/k_B
+#   压力单位 = ε/σ^3
+#   密度单位 = 1/σ^3
+# 使用LJ单位制的好处是结果具有普适性，可以映射到任何LJ流体。
+units           lj
+
+# atom_style atomic: 设置原子类型为"atomic"（基本原子类型）。
+# atomic类型为每个原子存储：
+#   - 原子ID、类型、坐标(x,y,z)、速度(vx,vy,vz)
+#   - 力和能量
+# GCMC模拟只需要基本的粒子位置，不需要电荷、分子键等复杂属性。
+atom_style      atomic
+
+# pair_style lj/cut 3.0: 设置对势为截断的Lennard-Jones势。
+# LJ势函数形式: U(r) = 4ε [(σ/r)^12 - (σ/r)^6]
+#   (σ/r)^12 项：短程Pauli排斥（电子云重叠）
+#   (σ/r)^6 项：长程色散吸引力（诱导偶极-诱导偶极）
+# 截断半径 3.0 σ: 距离超过3.0 σ的原子对之间U(r)=0。
+# 这是标准截断，因为U(r=3σ) ≈ 4×(1/3^12 - 1/3^6) ≈ -0.005ε，已经非常小。
+pair_style      lj/cut 3.0
+
+# pair_modify tail no:
+# 关闭尾部修正（tail correction）。
+# 尾部修正是对截断半径之外的LJ势能进行的解析积分修正。
+# 关闭的原因：GCMC计算中，如果启用了尾部修正，LAMMPS会触发
+# full_energy计算（需要全局总能量），这会显著增加GCMC的计算开销。
+# 对于GCMC，尾部修正对化学势的影响通常较小可忽略。
+pair_modify     tail no
+
+# ========================== 模拟盒子构建 =====================================
+
+# region box block 0 ${lbox} 0 ${lbox} 0 ${lbox}:
+# 定义模拟区域：一个边长为${lbox}=5.0的立方体盒子。
+# ${lbox}是之前定义的变量引用，在运行时替换为5.0。
+# 实际体积 = 5.0^3 = 125.0 σ^3
+region          box block 0 ${lbox} 0 ${lbox} 0 ${lbox}
+
+# create_box 1 box: 在box区域内创建模拟盒子，1种原子类型。
+# 此时盒子为空，没有原子——GCMC将通过插入尝试来填充盒子。
+create_box      1 box
+
+# ========================== LJ 势参数设置 ====================================
+
+# pair_coeff * * 1.0 1.0:
+# 设置LJ势的系数。
+#   - * *: 对所有原子类型对（这里只有类型1-1）
+#   - 1.0: ε = 1.0（约化能量参数，即势阱深度）
+#   - 1.0: σ = 1.0（约化长度参数，即碰撞直径）
+# 在LJ单位制中，ε=σ=1是标准设置。
+pair_coeff      * * 1.0 1.0
+
+# mass * 1.0: 设置所有原子类型的质量为1.0（约化质量单位）。
+# 在GCMC（蒙特卡洛）模拟中，质量不参与动力学，但LAMMPS仍然需要定义。
+mass            * 1.0
+
+# ========================== GCMC 分组设置 ====================================
+
+# group gcmcgroup type 1:
+# 创建一个名为"gcmcgroup"的原子组，包含所有类型1的原子。
+# 推荐为GCMC建立专门的分组，这样：
+#   - GCMC fix只对此组中的原子进行插入/删除操作
+#   - 便于后续的分析和统计（如count分子数）
+group           gcmcgroup type 1
+
+# ========================== GCMC Fix 设置 ====================================
+
+# fix mygcmc gcmcgroup gcmc 1 100 100 1 29494 ${temp} ${mu} ${disp}:
+# 核心：巨正则蒙特卡洛（GCMC）Fix。
+# 参数详解：
+#   - mygcmc:      fix的ID（后面用f_mygcmc引用其结果）
+#   - gcmcgroup:   应用此fix的原子组（只有组内原子参与GCMC）
+#   - gcmc:        fix类型——Grand Canonical Monte Carlo
+#   - 1:           每1步执行一次GCMC尝试（即每MD步都做MC尝试）
+#   - 100:         每次GCMC调用中进行100次MC尝试（插入/删除/位移各100次）
+#                  注意：实际执行的是等比例的插入、删除和位移尝试
+#   - 100:         每次调用中进行100次插入尝试（insertion attempts）
+#   - 1:           每次调用中进行1次删除尝试？不对——
+#                  实际上LAMMPS的gcmc语法后续参数是：
+#                  Nevery Nfreq Mfreq Rfreq seed T mu displace
+#   - 29494:       随机数种子（任意整数，保证可复现性）
+#   - ${temp}:     温度 = 2.0（约化单位）
+#   - ${mu}:       化学势 = -1.25（约化单位）
+#   - ${disp}:     最大位移 = 1.0（σ），MC位移步长
+#
+# GCMC尝试分为三种类型的MC移动：
+#   (1) 粒子位移（Translation/Displacement）：
+#       随机选择一个粒子，将其移动一个随机距离（最大${disp}）。
+#       接受概率：P_acc = min[1, exp(-ΔU/k_B T)]
+#       ΔU = 新构型的势能 - 旧构型的势能
+#
+#   (2) 粒子插入（Insertion）：
+#       在盒子中随机位置插入一个新粒子。
+#       接受概率：P_acc = min[1, (V/Λ^3(N+1)) × exp((μ-ΔU)/k_B T)]
+#       其中Λ = h/√(2πmk_BT)为热波长（LJ单位制中Λ为常数）
+#
+#   (3) 粒子删除（Deletion）：
+#       随机选择一个粒子并尝试删除。
+#       接受概率：P_acc = min[1, (NΛ^3/V) × exp(-(μ+ΔU)/k_B T)]
+#
+# 三种尝试的比例由gcmc的输入参数控制，通过调节插入/删除比例
+# 可以使平均粒子数收敛到期望值。
+fix             mygcmc gcmcgroup gcmc 1 100 100 1 29494 ${temp} ${mu} ${disp}
+
+# ========================== 动态分组与计数 ===================================
+
+# variable type1 atom "type==1":
+# 定义一个原子变量，用于动态筛选类型为1的原子。
+# 这个表达式对每个原子求值，返回"type==1"为真(1)或假(0)。
+# 用于下面group命令中动态更新组成员。
+variable        type1 atom "type==1"
+
+# group type1 dynamic gcmcgroup var type1:
+# 创建一个动态组"type1"。
+#   - dynamic: 组的内容在每个时间步自动更新
+#   - gcmcgroup: 父组，只在此组的原子中检查
+#   - var type1: 用变量type1来决定哪些原子属于此组
+# 由于GCMC会不断插入和删除原子，动态分组确保"type1"组始终包含
+# 所有当前存在的类型1原子。
+group           type1 dynamic gcmcgroup var type1
+
+# variable n1 equal count(type1):
+# 定义变量n1为type1组中的原子总数。
+# count()函数返回指定组中当前的原子数。
+# 由于GCMC插入/删除，n1会随时间涨落，平均值对应平衡态的<N>。
+variable        n1 equal count(type1)
+
+# ========================== 热力学量的变量定义 ===============================
+
+# variable rho equal density:
+# 密度 ρ = N/V（约化单位）。
+# density是LAMMPS内置变量，等于总原子数除以盒子体积。
+variable        rho equal density
+
+# variable p equal press:
+# 压力 p（约化单位）。
+# press是LAMMPS内置变量，使用维里定理（virial theorem）计算瞬时压力。
+variable        p equal press
+
+# variable nugget equal 1.0e-8:
+# 防零小量（nugget），避免log(0)或除零错误。
+# 在计算过量化学势时添加到对数参数中作为正则化项。
+variable        nugget equal 1.0e-8
+
+# variable lambda equal 1.0:
+# de Broglie热波长 Λ = h/√(2πmk_BT)（约化单位）。
+# 在LJ单位制中通常设为1.0（已经包含在化学势的定义中）。
+# 这是量子的热波长，描述粒子的量子力学波动性的特征长度。
+variable        lambda equal 1.0
+
+# variable muex equal ${mu}-${temp}*ln(density*${lambda}+${nugget}):
+# 过量化学势（excess chemical potential）μ_ex。
+# 推导过程：
+#   总化学势: μ = μ_id + μ_ex
+#   理想气体化学势: μ_id = k_B T × ln(ρΛ^3)
+#   因此: μ_ex = μ - k_B T × ln(ρΛ^3)
+# 在LJ单位和k_B=1下:
+#   μ_ex = μ - T × ln(ρ × Λ^3)
+#   μ_ex = ${mu} - ${temp} × ln(density × ${lambda}^3 + ${nugget})
+# 注意：这里lambda=1，所以Λ^3=1。
+# nugget防止密度为0时取log(0)出错。
+variable        muex equal ${mu}-${temp}*ln(density*${lambda}+${nugget})
+
+# ========================== 时间平均 Fix =====================================
+
+# fix ave all ave/time 10 100 1000 v_rho v_p v_muex v_n1 ave one file rho_vs_p.dat:
+# 时间平均fix，用于计算运行平均值并将结果写入文件。
+# 参数详解：
+#   - ave:        fix名称
+#   - all:        对所有原子（实际是全局量，与组无关）
+#   - ave/time:   时间平均类型
+#   - 10:         Nevery: 每10步采样一次
+#   - 100:        Nrepeat: 每个平均块使用100个采样点
+#   - 1000:       Nfreq: 每1000步输出一次平均结果
+#   - v_rho:      要平均的变量1：密度 ρ
+#   - v_p:        要平均的变量2：压力 p
+#   - v_muex:     要平均的变量3：过量化学势 μ_ex
+#   - v_n1:       要平均的变量4：粒子数 N
+#   - ave one:    模式=ave（计算平均值），one=输出为单次平均值
+#   - file rho_vs_p.dat: 输出文件（可导入Python/MATLAB画图）
+#
+# 平均策略：
+#   每10步取一个瞬时值 → 收集100个瞬时值(1000步) → 计算平均值 →
+#   每1000步输出一个平均值
+# 这等价于：每1000步输出过去1000步的块平均（block average）。
+# 输出文件rho_vs_p.dat包含时间序列的ρ, p, μ_ex, N的平均值。
+fix             ave all ave/time 10 100 1000 v_rho v_p v_muex v_n1 ave one file rho_vs_p.dat
+
+# 提取时间平均fix输出的各个分量，方便在thermo中输出：
+# rhoav:   平均密度
+# pav:     平均压力
+# muexav:  平均过量化学势
+# n1av:    平均粒子数
+variable        rhoav equal f_ave[1]
+variable        pav equal f_ave[2]
+variable        muexav equal f_ave[3]
+variable        n1av equal f_ave[4]
+
+# ========================== 接受率计算 =======================================
+
+# GCMC的三种MC移动的接受率，用于诊断模拟质量：
+
+# variable tacc equal f_mygcmc[2]/(f_mygcmc[1]+${nugget}):
+# 位移（Translation）接受率。
+# f_mygcmc[1]: 位移尝试的总次数
+# f_mygcmc[2]: 位移接受的总次数
+# tacc = 接受次数/(尝试次数+nugget)
+# 理想范围：30%-50%，过高说明位移太小（探索慢），过低说明位移太大（浪费）。
+variable        tacc equal f_mygcmc[2]/(f_mygcmc[1]+${nugget})
+
+# variable iacc equal f_mygcmc[4]/(f_mygcmc[3]+${nugget}):
+# 插入（Insertion）接受率。
+# f_mygcmc[3]: 插入尝试的总次数
+# f_mygcmc[4]: 插入接受的总次数
+# 插入接受率通常较低（尤其在稠密体系中），因为随机位置可能与其他原子重叠。
+variable        iacc equal f_mygcmc[4]/(f_mygcmc[3]+${nugget})
+
+# variable dacc equal f_mygcmc[6]/(f_mygcmc[5]+${nugget}):
+# 删除（Deletion）接受率。
+# f_mygcmc[5]: 删除尝试的总次数
+# f_mygcmc[6]: 删除接受的总次数
+# 在平衡态，插入和删除的平均次数应满足细致平衡条件。
+variable        dacc equal f_mygcmc[6]/(f_mygcmc[5]+${nugget})
+
+# ========================== 热力学输出设置 ===================================
+
+# compute_modify thermo_temp dynamic/dof yes:
+# 修改温度计算的方式。
+#   - dynamic/dof yes: 动态调整自由度（degrees of freedom）。
+#     由于GCMC中粒子数不断变化，系统的自由度也随之改变。
+#     温度 = 2×KE/(3N-3) ，其中N随时间变化。
+#     启用此选项后，LAMMPS会在每个时间步用当前的N来计算正确的DOF。
+compute_modify  thermo_temp dynamic/dof yes
+
+# thermo_style custom: 自定义热力学输出。
+# 每thermo步输出以下列：
+#   step:    当前模拟步数（第几步）
+#   temp:    瞬时温度（T*）
+#   press:   瞬时压力（p*）
+#   pe:      势能（U*/粒子或总能量，取决于LAMMPS版本）
+#   ke:      动能（由fix gcmc中的热浴决定）
+#   density: 瞬时密度（ρ* = N/V）
+#   atoms:   当前原子数（N）
+#   v_iacc:  插入接受率（诊断GCMC效率）
+#   v_dacc:  删除接受率（诊断GCMC效率）
+#   v_tacc:  位移接受率（诊断GCMC效率）
+#   v_rhoav: 时间平均密度（比瞬时值更平滑）
+#   v_pav:   时间平均压力
+#   v_muexav: 时间平均过量化学势
+#   v_n1av:  时间平均粒子数
+thermo_style    custom step temp press pe ke density atoms v_iacc v_dacc v_tacc v_rhoav v_pav v_muexav v_n1av
+
+# thermo 1000: 每1000步输出一次热力学信息到屏幕和日志。
+# 对于GCMC这种蒙特卡洛模拟，输出频率不宜太高，
+# 因为需要足够多的MC尝试才能获得有统计意义的数据。
+thermo          1000
+
+# ========================== 运行模拟 =========================================
+
+# run 10000: 运行10000步模拟。
+# 由于fix gcmc每1步做100次MC尝试，总共进行：
+#   10000 × 100 = 1,000,000 次MC尝试
+# 这是足够的统计量，可以得到合理的密度和化学势关系。
+# 注意：前面约2000步为平衡阶段（equilibration），数据应丢弃。
+# 后面约8000步为生产阶段（production），用于统计平均。
+run             10000

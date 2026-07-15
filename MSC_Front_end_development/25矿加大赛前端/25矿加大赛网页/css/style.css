@@ -1,0 +1,21 @@
+@layer utilities {
+    .content-auto {
+        content-visibility: auto;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .transition-transform-opacity {
+        transition-property: transform, opacity;
+    }
+    .scale-up-center {
+        transform: scale(1.05);
+    }
+    .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+}

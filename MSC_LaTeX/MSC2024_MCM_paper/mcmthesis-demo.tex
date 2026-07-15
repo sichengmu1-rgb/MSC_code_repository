@@ -1,0 +1,982 @@
+\documentclass{mcmthesis}
+\mcmsetup{CTeX = false,   % 使用 CTeX 套装时，设置为 true
+        tcn = 2403444, problem = A,
+        sheet = true, titleinsheet = true, keywordsinsheet = true,
+        titlepage = false, abstract = true}
+% \usepackage{newtxtext,newtxmath}
+\usepackage{palatino}
+\usepackage{lipsum}
+\usepackage{tabularray}
+\usepackage{float}
+\usepackage{colortbl}  %彩色表格需要加载的宏包
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{algorithm} % 加载algorithm宏包
+\usepackage{algpseudocode} % 加载algpseudocode宏包
+\usepackage{vcell}
+\usepackage{longtable}
+\usepackage{caption}
+\title{Sea Lamprey: a really interesting multifaceted fish}
+% 这一段是备忘录部分，如果题目没有让写备忘录 或者书信 可以不要
+% \author{\small \href{http://www.latexstudio.net/}
+%   {\includegraphics[width=7cm]{mcmthesis-logo}}}
+% \date{\today}
+
+%  \memoto{\LaTeX{}studio}
+% \memofrom{Liam Huang}
+% \memosubject{Happy \TeX{}ing!}
+% \memodate{\today}
+% %\memologo{\LARGE I'm pretending to be a LOGO!}
+
+% 调整caption与上方内容的距离
+\setlength{\abovecaptionskip}{3pt} % 默认值通常是10pt
+
+% 调整caption与下方内容的距离
+\setlength{\belowcaptionskip}{0pt} % 默认值通常是0pt
+
+\begin{document}
+\begin{abstract}
+  Sea Lamprey have their role in the ecosystem and they have a very negative role in ecosystems that they've invaded.
+  But disasters can really lead to innovation and ongoing cooperation and collaboration.
+  In order to control biological invasions and recover endangered species,
+  we developed the \textbf{specific ecosystem models of Sea Lamprey} contributing to develop more effective management strategies.
+
+  Several models are established: Model I: Structured Population Model;
+  Model II: Biological ecological model;
+  Model III: Model of interspecific competition, etc.
+
+  Before all the models are established, we reviewed a large amount of literature and collected multidimensional environmental resource data
+  to figure out the complete life cycle of the fish and to provide a factual basis for subsequent modelling.
+  Then we decided to use Sea Lamprey from the Great Lakes region as our main research object.
+
+  For Model I: Focusing on the sex ratio, we modified the traditional \textbf{Lotka-Volterra model},
+  in which Sea Lamprey are predators and other fish are prey.
+  Inspired by models of predation by populations of aphids, parasitic wasps and ladybirds, 
+  and taking into account the influence of the external environment on the sex ratio of Sea Lamprey ($\varepsilon$), we constructed a brand-new model 
+  to calculate the relationship between sex ratio and prey consumption. 
+  The results are shown in Figure \ref{Chart of population change} and Figure \ref{Bubble Plot of Sex Ratio and Prey Consumed over Time}.
+  
+  For Model II: On the basis of Model I, a population size change model, a predation success model, and an energy flow model were added to the analysis.
+  Especially, in predation success model we introduce \textbf{probability theory} to establish the energy flow model.
+  The summary of the impact on the larger ecological and the impact on the stability of the ecosystem 
+  is presented in section 6.4 and the analysis of the advantages and disadvantages is listed in section 6.5.
+
+  For Model III: Based on Model I, the coefficient of male-female competition ($a_{fm}$, $a_{mf}$) was introduced in the population of Sea Lamprey 
+  to emphasise the process of \textbf{interspecific competition}.
+  Natural disasters were added in the 5th year. 
+  The results are shown in Figure \ref{Population and Resource Change over Time} and Figure \ref{Ecological Stability Index over Time}, indicating that the ecosystem is more stable.
+  
+  Finally, to test the robustness of the model, the initial Sea Lamprey population parameters were randomly 
+  perturbed by 5\% and the rate of change in Sea Lamprey population size was 2.064\% from the set threshold.
+  The model can be considered stable.
+  
+  \begin{keywords}
+    the specific ecosystem models of Sea Lamprey; Lotka-Volterra model; probability theory; interspecific competition
+  \end{keywords}
+\end{abstract}
+\maketitle
+%% Generate the Table of Contents, if it's needed.
+\tableofcontents
+\newpage
+\section{Introduction}
+\subsection{Background}
+
+Historically, the lampreys was highly prized as a food fish among Native Americans and the earliest European colonizers.
+Of course, we all know there's also a story about King Henry, who died from an overdose of lampreys.
+Nowadays, people only remember the lampreys for its performances in horror movies
+and its ecological invasion of the Great Lakes of North America.
+But, as the \textbf{Fish of the Week!}\cite{1} said: ``Disasters can really lead to innovation and ongoing cooperation and collaboration.
+And that's always a really good thing when it comes to fisheries management."
+
+The distribution of lampreys populations is characterized by a \textbf{strong dependence on nutrients in the water},
+especially larval lamprey that live in submerged silt and feed on detrital debris and small plants (algae),
+as illustrated in the following Figure \ref{fig1} of the Great Lakes distribution of Phosphorus Levels\cite{2}, Northern Brook Lamprey and Silver Lamprey\cite{3}.
+
+\begin{figure}[h]
+  \begin{minipage}{0.32\linewidth}
+    \vspace{3pt}
+    \centerline{\includegraphics[width=5cm,height=3cm]{lake1}}
+    \centerline{(a)Phosphorus Levels}
+  \end{minipage}
+  \begin{minipage}{0.32\linewidth}
+    \vspace{3pt}
+    \centerline{\includegraphics[width=5cm,height=3cm]{lake2}}
+    \centerline{(b)Northern Brook Lamprey}
+  \end{minipage}
+  \begin{minipage}{0.32\linewidth}
+    \vspace{3pt}
+    \centerline{\includegraphics[width=5cm,height=3cm]{lake3}}
+    \centerline{(c)Silver Lamprey}
+  \end{minipage}
+  \caption{Comparison of nutrient and lampreys distribution}
+  \label{fig1}
+\end{figure}
+
+Algae develop better in \textbf{phosphorus-rich waters},
+so we roughly consider the phosphorus levels map as a nutrient distribution map.
+Northern Brook Lamprey and Silver Lamprey as native lampreys to the Great Lakes region
+can better reflect the relationship between nutrient and lampreys distribution.
+As can be seen above, trophic distribution and lampreys distribution are highly correlated.
+
+\subsection{Restatement of the Problem}
+The sex ratio of sea sevengill eels may vary depending on the external environment.
+The Sea Lampreys become male or female depending on their growth rate during the larval stage.
+The growth rate of these larvae is affected by food availability.
+
+\begin{itemize}
+  \item Build a mathematical model to describe the relationship between the sex ratio of lampreys and the larger ecological system.
+  \item Identify  factors are key to the advantages and disadvantages to the population of lampreys, using the improved mathematical model.
+  \item Optimize the model based on first question model to analyze impacts on ecosystem stability by variations in the sex ratio of lampreys.
+  \item Find one species benefited from changes in lampreys sex ratio, and explore multispecies relationships among one species and lampreys using well-established models.
+\end{itemize}
+
+\subsection{Our Work}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\linewidth]{flow chart}
+  \caption{Our Work Flow Chart}
+  \label{Our Work Flow Chart}
+\end{figure}
+
+\section{Literature Review}
+This question does not directly provide a large amount of data for reference, giving us ample room for exploration.
+So we spent a lot of time in the search for lampreys, and we gradually unraveled the mystery of the lampreys,
+even from its history and culture, to its physiological changes.
+
+We are gradually recognizing  a really interesting multifaceted fish entirely.
+Everything we know about the lampreys is the skeleton of the model so I feel the need to elaborate.
+\textbf{Visualizing} the data for display is a good way to do this, as the amount of data is too large to list in its entirety
+
+\subsection{Environment Data}
+Through a review of the literature we found the Great Lakes region to be an ideal study site
+because of its history of \textbf{invasive fish species} and \textbf{the original ecology of the region}.
+So we focused on the Great Lakes lamprey.
+
+The official website of \textbf{the Government of Canada}\cite{4} and \textbf{Great Lakes Fishery Commission}\cite{5} were queried
+and lots of data about environmental conservation and protection, environment statistics and fisheries etc. of the Great Lakes were collected.
+\newpage
+And other data sources are shown in Table \ref{Data and Database Websites}.
+\begin{table}[H]
+  \centering
+  \caption{Data and Database Websites}
+  \label{Data and Database Websites}
+  \begin{tblr}{
+    row{1} = {c},
+    cell{2}{1} = {c},
+    cell{3}{1} = {c},
+    cell{4}{1} = {c},
+    cell{5}{1} = {c},
+    cell{6}{1} = {c},
+    hline{2} = {-}{},
+    hline{1,7} = {-}{0.06cm},
+      }
+    \textbf{Database Names}         & \textbf{Database Websites}    \\
+    Science Citation Index Expanded & https://www.webofscience.com/ \\
+    SpringerLink                    & https://link.springer.com/    \\
+    Google Scholar                  & https://scholar.google.com/   \\
+    Government of Canada            & https://www.canada.ca/en.html \\
+    Great Lakes Fishery Commission  & http://www.glfc.org/index.php
+  \end{tblr}
+\end{table}
+
+\subsection{Lampreys Data}
+Having a grotesque alien mouth that looks like a snake
+doesn't mean you don't have an important role to play in the ecosystem.
+Lampreys can transport marine-sourced nutrients and classify bottom sediments
+by building and creating complex depth and velocity profiles for insects and fish to occupy
+and make connections between freshwater, seawater, and forests.
+
+Fish are divided into many populations like Northern Brook Lamprey, Silver Lamprey, American brook lamprey over billions of years.
+After consideration we decided to study \textbf{the Sea Lamprey} because it is an excellent sample to analyze
+as an invader of the Great Lakes, competing with \textbf{local fish} at same time competing with \textbf{other fish} and seriously affecting \textbf{the local ecosystems}.
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}{0.49\linewidth}
+    \centering
+    \includegraphics[width=0.9\linewidth]{Northern Brook Lamprey}
+    \centerline{(a)Northern Brook Lamprey}
+    \label{Northern Brook Lamprey}
+  \end{minipage}
+  \begin{minipage}{0.49\linewidth}
+    \centering
+    \includegraphics[width=0.9\linewidth]{Silver Lamprey}
+    \centerline{(b)Silver Lamprey}
+    \label{Silver Lamprey}
+  \end{minipage}
+  \caption{Native Lamprey}
+  \label{fig2}
+\end{figure}
+
+Figure \ref{fig2} above are of \textbf{Northern Brook Lamprey} and \textbf{Silver Lamprey}\cite{6} that are native to the Great Lakes
+and they received disaster when the Sea Lamprey species invaded.
+If Sea Lamprey are not managed effectively, these species may become at greater risk of \textbf{extinction}.
+
+The lampreys has a complex lifecycle consisting of several stages.
+As Figure \ref{Sea Lamprey Lifecycle} shown below, the picture of \textbf{Sea Lamprey Lifecycle}\cite{7} describes the whole process very clearly.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=12cm]{Sea Lamprey Lifecycle}
+  \caption{Sea Lamprey Lifecycle}
+  \label{Sea Lamprey Lifecycle}
+\end{figure}
+
+\section{Assumptions and Explanations}
+Real environments are often very complex, because in the limited time we have it is impossible to take into account all the factors.
+To simplify our modeling, we make the following assumptions.
+\begin{itemize}
+  \item \textbf{Assumption 1: Ignoring anthropogenic impacts on Sea Lamprey in the Great Lakes.}\\
+        \textbf{Explanation:} Humans began using chemical and pheromone control methods to control fish populations
+        in the Great Lakes region in the 1960s\cite{8}; all data in this paper are after 1980,
+        and we believe that the extent of human intervention has changed very little
+        since the 1960s so we can ignore the variable of human activity.
+  \item \textbf{Assumption 2: The only food for adult Sea Lamprey (Petromyzon murinus) is Trout, Perch, Whitefish and Cod.}\\
+        \textbf{Explanation:} The main source of nutrition for Sea Lamprey is parasitic behavior.
+        Trout, Perch, Whitefish and Cod are the most farmed fish in the Great Lakes region,
+        and trends in the increase or decrease of Sea Lamprey populations correlate strongly with trends in the increase or decrease of those fish.
+  \item \textbf{Assumption 3: The data collected can be considered reliable to reflect changes in population trends of different sexes of Sea Lamprey and predated fish.}\\
+        \textbf{Explanation:} Data of females Sea Lamprey, males Sea Lamprey, and predated fish
+        and other data were obtained from the official website and academic articles, such as the Government of Canada and Great Lakes Fishery Commission, with high accuracy and credibility.
+\end{itemize}
+
+\section{Notations}
+Some important mathematical notations used in this paper are listed in Table \ref{Notations used in this paper}.
+There are a number of symbols not listed here that will be discussed in detail in each section.
+
+\begin{table}[H]
+  \centering
+  \caption{Notations used in this paper}
+  \label{Notations used in this paper}
+  \setlength{\extrarowheight}{0pt}
+  \addtolength{\extrarowheight}{\aboverulesep}
+  \addtolength{\extrarowheight}{\belowrulesep}
+  \setlength{\aboverulesep}{0pt}
+  \setlength{\belowrulesep}{0pt}
+  \begin{tabular}{cc}
+    \specialrule{0.06cm}{0pt}{0.1cm} % 最上面的线加粗
+    \rowcolor[rgb]{0.31,0.682,0.867} Symbol & Decription                          \\
+    \specialrule{\lightrulewidth}{0.1cm}{0pt} % 中间的线
+    $N_{f}$                          & Female population of Sea Lamprey    \\
+    $N_{m}$                          & Male population of Sea Lamprey      \\
+    $N$                              & The population of Sea Lamprey       \\
+    $U$                              & Prey population of Sea Lamprey      \\
+    $\varepsilon$                    & Sex ratio of Sea Lamprey population \\
+    \specialrule{0.06cm}{0pt}{0pt} % 最下面的线加粗
+  \end{tabular}
+\end{table}
+
+\section{Structured Population Model}
+
+\subsection{Lotka-Volterra Model}
+\textbf{The Lotka-Volterra Model}, often referred to as \textbf{the Predator-Prey Model},
+can give an indication of how changes in the population size of predators and prey
+depend on the numbers and interactions between the two parties.
+The Sea Lamprey is the predator and other fishes act as the prey to build the Lotka-Volterra model,
+but considering the variation in the \textbf{sex ratio} of the Sea Lamprey we can't use the model directly.
+
+\subsection{Ordinary Differential Equation}
+NakazawaIn et al. constructed an ordinary differential predation
+within a population consisting of \textbf{aphids}, \textbf{parasitoid wasps}, and \textbf{ladybug Ordinary Differential Equation(ODE)}\cite{9}.
+We found that the interspecific relationships between aphids, parasitic wasps, and ladybugs were very similar to
+those between Prey, Female Sea Lamprey and Male Sea Lamprey, shown in Figure \ref{species comparison}.
+
+\begin{figure}[H]
+  \small
+  \centering
+  \includegraphics[width=13cm]{species comparison}
+  \caption{Species Comparison}
+  \label{species comparison}
+\end{figure}
+
+Numerous experimental results have shown that
+there are complex interactions among aphids, parasitoid wasps and ladybugs,
+such as \textbf{host-parasitism}, \textbf{intra-group predatory} relationships.
+There are also complex parasitic, predatory, and competitive relationships between Prey, Female Sea Lamprey and Male Sea Lamprey.
+
+\subsection{Structured Population Model}
+By combining Lotka-Volterra Model and Ordinary Differential Equation, we finally establish \textbf{Structured Population Model}.
+
+This model takes into account the birth rate, natural mortality rate, and predation efficiency of the species,
+and also introduces \textbf{a stochastic factor} of the probability of prey being taken.
+\begin{table}[H]
+  \centering
+  \caption{Notations used in Equation1}
+  \label{Notations used in Equation1}
+  \setlength{\extrarowheight}{0pt}
+  \addtolength{\extrarowheight}{\aboverulesep}
+  \addtolength{\extrarowheight}{\belowrulesep}
+  \setlength{\aboverulesep}{0pt}
+  \setlength{\belowrulesep}{0pt}
+  \begin{tabular}{cc}
+    \specialrule{0.06cm}{0pt}{0.1cm}
+    \rowcolor[rgb]{0.31,0.682,0.867} Symbol & Decription                                            \\
+    \specialrule{\lightrulewidth}{0.1cm}{0pt} % 自定义的水平线样式
+    $r_{f}$                          & Natural female growth rate of Sea Lampreys population \\
+    $r_{m}$                          & Natural male growth rate of Sea Lampreys population   \\
+    $r_{u}$                          & Natural growth rate of Sea Lampreys prey              \\
+    $K$                              & Maximum carrying capacity of the environment          \\
+    $\alpha$                         & Female predation intensity                            \\
+    $\beta$                          & Male predation intensity                              \\
+    $e_{1}$                          & Parasitism and predation rates of female Sea Lamprey  \\
+    $e_{2}$                          & Parasitism and predation rates in male Sea Lamprey    \\
+    $m_{1}$                          & Natural mortality of female Sea Lamprey               \\
+    $m_{2}$                          & Natural mortality of male Sea Lamprey                 \\
+    $m$                              & Natural mortality of Sea Lamprey prey                 \\
+    \specialrule{0.06cm}{0pt}{0pt} % 自定义的水平线样式
+    \toprule
+  \end{tabular}
+\end{table}
+
+The Structured Population Model are as follows:
+
+\begin{equation}
+  \label{equation1}
+  \begin{cases}
+    \begin{aligned}
+      \frac{\mathrm{d} N_{f}}{\mathrm{d} t} & = r_{f} N_{f} \left(1 - \frac{N_{f}}{K} \right) - (\alpha - e_{1}) N_{f} N_{m} + \varepsilon N_{f} U - m_{1} N_{f},      \\
+      \frac{\mathrm{d} N_{m}}{\mathrm{d} t} & = r_{m} N_{m} \left(1 - \frac{N_{m}}{K} \right) - (\beta - e_{2}) N_{f} N_{m} + (1 - \varepsilon) N_{m} U - m_{2} N_{m}, \\
+      \frac{\mathrm{d} U}{\mathrm{d} t}     & = r U \left(1 - \frac{U}{K} \right) - (\alpha + \beta - e_{1} - e_{2}) N_{f} N_{m} - G(t) - m U.
+    \end{aligned}
+  \end{cases}
+\end{equation}
+
+Where $0<N(0)=N0<K$
+
+In this eqn.\ref{equation1} we define a function $G(t)$ used to simplify the equation.
+\begin{equation}
+  G(t)=[N_{m}+(N_{f} -N_{m})]U
+\end{equation}
+Write a program to implement our model using \texttt{python}.
+We refer to relevant papers for the following parameter settings,
+but since the parameters in various academic papers are not uniform,
+we have selected the parameters that are most favorable for building this model.
+The pseudocode of Parameter Settings is as follows:
+
+\begin{algorithm}[H]
+  \caption{Parameter Settings}
+  \begin{algorithmic}
+    \State \textcolor{blue}{$r_M = 0.04$} \Comment{Reproduction rate of male Sea Lamprey}
+    \State \textcolor{blue}{$m_M = 0.02$} \Comment{Natural mortality rate of male Sea Lamprey}
+    \State \textcolor{blue}{$b_M = 0.002$} \Comment{Predation efficiency of male Sea Lamprey}
+    \State \textcolor{teal}{$r_F = 0.03$} \Comment{Reproduction rate of female Sea Lamprey}
+    \State \textcolor{teal}{$m_F = 0.02$} \Comment{Natural mortality rate of female Sea Lamprey}
+    \State \textcolor{teal}{$b_F = 0.001$} \Comment{Predation efficiency of female Sea Lamprey}
+    \State \textcolor{magenta}{$r_P = 0.1$} \Comment{Natural growth rate of Sea Lamprey prey}
+    \State \textcolor{magenta}{$a = 0.001$} \Comment{Predation probability of Sea Lamprey prey}
+  \end{algorithmic}
+\end{algorithm}
+
+The pseudocode of Population Simulation is as follows:
+\begin{algorithm}[H]
+  \caption{Population Simulation}
+  \begin{algorithmic}
+    \State \textcolor{black}{$t \gets 0$}
+    \While{\textcolor{black}{$t < N-1$}}
+    \State \textcolor{blue}{$M[t + 1] \gets M[t] + (r_M \times M[t] \times (1 - \frac{M[t]}{K}) - m_M \times M[t] + b_M \times a \times P[t] \times M[t]) \times dt$}
+    \State \textcolor{teal}{$F[t + 1] \gets F[t] + (r_F \times F[t] \times (1 - \frac{F[t]}{K}) - m_F \times F[t] + b_F \times a \times P[t] \times F[t]) \times dt$}
+    \State \textcolor{magenta}{$P[t + 1] \gets P[t] + (r_P \times P[t] \times (1 - \frac{P[t]}{K}) - a \times P[t] \times (M[t] + F[t])) \times dt$}
+    \State \textcolor{black}{$t \gets t + 1$}
+    \EndWhile
+  \end{algorithmic}
+\end{algorithm}
+
+The simulation is carried out for a period of 100 time steps, with a time step of 0.05.
+The initial population sizes are set to 50 male and 50 female sea lampreys, and 300 prey.
+The code calculates the population sizes at each time step and stores them in arrays.
+Finally, it plots the population sizes as a function of time, displaying the male, female, and prey populations as separate curves.
+\newpage
+\subsection{Results and Analysis}
+The figure of simulated changes in \textbf{Prey}, \textbf{Female Sea Lamprey} and \textbf{Male Sea Lamprey} population was generated.
+\begin{figure}[H]
+  \small
+  \centering
+  \includegraphics[width=0.8\linewidth]{equation1}
+  \caption{Chart of population change}
+  \label{Chart of population change}
+\end{figure}
+As can be seen from the above Figure \ref{Chart of population change},
+the number of predators, Sea Lamprey, increased rapidly over a limited period of time,
+the number of prey decreased sharply, the number of predators polarized with the number of prey,
+and there was a significant gap between the number of males and females within the Sea Lamprey population.
+\begin{figure}[H]
+  \small
+  \centering
+  \includegraphics[width=0.6\linewidth]{bubble plot}
+  \caption{Bubble Plot of Sex Ratio and Prey Consumed over Time}
+  \label{Bubble Plot of Sex Ratio and Prey Consumed over Time}
+\end{figure}
+In Figure \ref{Bubble Plot of Sex Ratio and Prey Consumed over Time} the x-axis represents time, the y-axis represents the sex ratio,
+and the size and color of the bubbles are determined by the number of prey.
+The size of the bubbles uses the number of prey and is scaled appropriately to make it easier to observe.
+The change in sex ratio over time can be visualized through bubble plots,
+and the effect of the number of predators is demonstrated by the size of the bubbles.
+
+\section{Biological ecological model}
+The Structured Population Model was only a model proposed for sex ratios
+and could not achieve the a effect of the impact on the larger ecological system required in the question.
+So the Biological ecological model was build based on The Structured Population Model.
+\textbf{A population size change model}, \textbf{a predation success model}, and \textbf{an energy flow model} were added to the analysis of sex ratio.
+
+\subsection{Population size change model}
+Where $0<NF(0)=NF0<K$, $Nm(0)=Nm0≥0$, $U(0)=U0≥0$, $Nf(t)$, $Nm(t)$ and $U(t)$ are the population densities of
+female, male and prey of sea lamprey at time $t$, respectively.
+It is assumed that the development of the Sea Lamprey population follows \textbf{a logistic growth pattern},
+and $r$ and $K$ are the natural growth rate and the maximum environmental capacity, respectively.
+Parasitism and predation behaviors were described by Holling type II functional response functions $\varphi i$.
+
+\begin{equation}
+  \phi_{i}(x, y)=\frac{c_{i} x y}{1+h_{i} x}(i=1,2,3)
+\end{equation}
+
+$ei$ is \textbf{the switching rate between parasitic and predatory behavior},
+$m1$ and $m2$ are \textbf{the natural mortality rates of females and males}, respectively.
+All parameters in equation\ref{equation2}\cite{10} are positive constants. The impulse differential equation was modeled as follows:
+
+\begin{equation}
+  \label{equation2}
+  \begin{cases}
+    \begin{aligned}
+      \frac{\mathrm{d} N_{f}}{\mathrm{d} t} & = r N_{f}(t)\left(1-\frac{N_{f}(t)}{K}\right)-\phi_{1}(N_{f}(t), N_{m}(t))-\phi_{2}(N_{f}(t), P(t)) \\
+      \frac{\mathrm{d} N_{m}}{\mathrm{d} t} & = e_{1} \phi_{1}(N_{f}(t), N_{m}(t))-\phi_{3}(N_{m}(t), P(t))-\mathrm{m}_{1}N_{m}(t)                \\
+      \frac{\mathrm{d} U(t)}{\mathrm{d} t}  & = e_{2} \phi_{2}(N_{f}(t), P(t))-e_{3} \phi_{3}(N_{m}(t), P(t))-\mathrm{m}_{2} P(t)                 \\
+      N_{f} \left(t^{+}\right)              & = N_{f}(t)                                                                                          \\
+      N_{m}\left(t^{+}\right)               & = N_{m}(t)                                                                                          \\
+      U\left(t^{+}\right)                   & = U(t)
+    \end{aligned}
+  \end{cases}
+\end{equation}
+
+\subsection{Predation success model}
+The system(\ref{equation1}) is first analyzed from the point of view of dynamics in the following.
+The positivity and boundedness of the solutions of the system(\ref{equation2}) are studied.
+
+\begin{equation}
+  \frac{d N_{f} (t)}{d t}_{N_{f}=0}=0,
+  \frac{d N_{m} (t)}{d t}_{N_{m}=0}=0,
+  \frac{d U(t)}{d t}_{U=0}=0
+\end{equation}
+
+Based on an extensive literature review, we define $\epsilon \in [0.524,0.812]$.
+
+Suppose $X(t)=(N_{f}(t), N_{m}(t), U(t))^{T}$ is the solution of the system(\ref{equation1}) with non-negative initial conditions.
+Let $V=\mathrm{e}_{2} N_{f}(t)+\mathrm{e}_{3} N_{m}(t)+U(\mathrm{t})$, then $V \in V_{0}$.
+\begin{equation}
+  \left\{\begin{aligned}
+    D^{+} V(t)=                   & r e_{2} N_{f}-\frac{e_{2} r H^{2}(t)}{K}-\frac{\left(e_{2}-e_{1} e_{3}\right) c_{1} N_{f} N_{m}}{1+N_{f1} N_{f}} \\
+                                  & -\mathrm{m}_{1} e_{3} N_{m}-\mathrm{m}_{2} U(t), \quad t \neq k \tau                                             \\
+    V\left(\mathrm{t}^{+}\right)= & V(t)+\sigma, \quad t=k \tau
+  \end{aligned}\right.
+\end{equation}
+
+Because $e_{2}>e_{1} e_{3}$, for any $\eta>0, t \neq k \tau$, there are
+\begin{equation}
+  D^{+} V(t)+\eta V(t) \leq e_{2}(\eta+r) N_{f}-\frac{e_{2} r N_{f}^{2}(t)}{K}-e_{3}\left(m_{1}-\eta\right) N_{m}-\left(m_{2}-\eta\right) U(t)
+\end{equation}
+
+Take $\eta=\eta_{0} \in\left(0, \min \left\{m_{1}, m_{2}\right\}\right)$, then there exists $K_{1}>0$ such that
+\begin{equation}
+  \left(\eta_{0}+e_{2} r\right) N_{f}-\frac{e_{2} r N_{f}^{2}(t)}{K}-\left(e_{3} m_{1}-\eta_{0}\right) N_{m}-\left(m_{2}-\eta_{0}\right) U(t) \leq K_{1}
+\end{equation}
+
+Thus it can be deduced that
+\begin{equation}
+  \left\{\begin{array}{l}
+    D^{+} V(t) \leq-\eta_{0} V(t)+K_{1}             \\
+    V\left(t^{+}\right)=V(t)+\sigma, \quad t=k \tau \\
+    V\left(0^{+}\right)=V(0)
+  \end{array}\right.
+\end{equation}
+
+Consider again the impulse differential equation.
+\begin{equation}
+  \label{impulse differential equation}
+  \left\{\begin{array}{l}
+    \frac{d x(t)}{d t}=K_{1}-\eta_{0} x(t), \quad t \neq k \tau \\
+    x\left(t^{+}\right)=x(t)+\sigma, \quad t=k \tau             \\
+    x\left(0^{+}\right)=V(0)
+  \end{array}\right.
+\end{equation}
+
+According to the basic conclusion of \textbf{the linear impulse differential equation},
+it is known that the system(\ref{impulse differential equation}) has a globally asymptotically stable positive periodic solution.
+\begin{equation}
+  \left\{\begin{array}{l}
+    \tilde{x}(t)=\frac{K_{1}}{\eta_{0}}+\frac{\sigma \exp \left(-\eta_{0}(t-k \tau)\right)}{1-\exp \left(-\eta_{0} \tau\right)}, \quad t \in(k \tau,(k+1) \tau]  \\
+    \tilde{x}\left(0^{+}\right)=\frac{K_{1}}{\eta_{0}}+\frac{\sigma}{1-\exp \left(-\eta_{0} \tau\right)}
+  \end{array}\right.
+\end{equation}
+
+The solution of the system(\ref{impulse differential equation}) has the following form.
+\begin{equation}
+  x(t)=\left(x\left(0^{+}\right)-\tilde{x}\left(0^{+}\right)\right) \exp \left(-\eta_{0} t\right)+\tilde{x}(t)
+\end{equation}
+
+Satisfy $\lim _{t \rightarrow \infty} x(t)=\tilde{x}(t)$
+By the comparative theorem, obtain the following result:
+\begin{equation}
+  V(t) \leq x(t) \leq \frac{K_{1}}{\eta_{0}}+\frac{\sigma}{1-\exp \left(-\eta_{0} \tau\right)}+\left|x\left(0^{+}\right)-\tilde{x}\left(0^{+}\right)\right|, \quad t \geq 0
+\end{equation}
+
+Thus $V(t)$ will eventually be bounded, i.e., there exists a positive number $L$,
+when $t$ is sufficiently large, such that $N_{f} \leq L, N_{m} \leq L$ and $U(t) \leq L$ hold.
+
+According to the third and sixth equations of the system(\ref{equation2}), it can be obtained that
+\begin{equation}
+  \left\{
+  \begin{array}{l}
+    \frac{d U(t)}{d t} \geq-m_{2} U(t), \quad t \neq k \tau  \\
+    P\left(t^{+}\right)=U(t)+\sigma, \quad t=k \tau          \\
+    P(0)=P_{0}>0 
+  \end{array}\right.
+\end{equation}
+
+Constructing and considering their comparative systems.
+\begin{equation}
+  \left\{\begin{array}{l}
+    \frac{d x_{1}(t)}{d t}=-m_{2} x_{1}(t), \quad t \neq k \tau \\
+    x_{1}\left(t^{+}\right)=x_{1}(t)+\sigma, \quad t=k \tau     \\
+    P(0)=P_{0}>0 
+  \end{array}\right.
+\end{equation}
+
+Similar to the discussion of the systems (\ref{equation2}) and (\ref{impulse differential equation}), it can be obtained that
+\begin{equation}
+  \lim _{t \rightarrow \infty} x_{1}(t)=\tilde{P}(t)=\frac{\sigma \exp \left(-m_{2}(t-k \tau)\right)}{1-\exp \left(-m_{2} \tau\right)}, \quad t \in(k \tau,(k+1) \tau], k=0,1, \cdots
+\end{equation}
+
+Thus for sufficiently small $\varepsilon>0$, there exists $t_{1}>0$ such that when $t>t_{1}$, there is $x_{1}(t)>\tilde{U}(t)-\varepsilon$.
+Then by the comparison theorem, we have $U(t) \geq x_{1}(t)>\tilde{U}(t)-\varepsilon, t>t_{1}$.
+
+In addition, due to
+\begin{equation}
+  \frac{\sigma \exp \left(-m_{2} \tau\right)}{1-\exp \left(-m_{2} \tau\right)}=\tilde{U}(\tau) \leq \tilde{U}(t)=\frac{\sigma \exp \left(-m_{2}(t-k \tau)\right)}{1-\exp \left(-m_{2} \tau\right)}, t \in(k \tau,(k+1) \tau]
+\end{equation}
+
+According to the first equation of the system(\ref{equation2}), when $t>t_{1}$, there are
+\begin{equation}
+  \begin{aligned}
+    \frac{d r_{f}}{d t} & \leq r r_{f}\left(1-\frac{r_{f}}{K}\right)-\frac{c_{2}(\tilde{U}(t)-\varepsilon)}{1+h_{2} r_{f}} r_{f}                                     \\
+                        & =\frac{r_{f}\left[\left(r-c_{2}(\tilde{P}(\tau))+r\left(h_{2}-1 / K\right) r_{f}-r h_{2}  r_{f}^{2}(t) / K\right]\right.}{1+h_{2} r_{f}} 
+  \end{aligned}
+\end{equation}
+
+If $r<\frac{c_{2} \sigma}{\exp \left(m_{2} \tau\right)-1}, \varepsilon>0$ is sufficiently small,
+then $r<c_{2}(\tilde{U}(\tau)-\varepsilon)$ and $h_{2}-1 / K \leq 0$ must hold. holds,
+then $r<c_{2}(\tilde{U}(t)-\varepsilon), \frac{d r_{f}}{d t}<0$ holds for all $t>t_{1}$.
+Therefore there exists $t_{2}>t_{1}$ such that when $t>t_{2}$, there is $0 \leq r_{f}<\varepsilon$.
+
+Combining the obtained conclusions about $r_{f}$ and $r_{m}$,
+based on the second equation of the system(\ref{equation2}), it can be deduced that when $t>t_{2}$, there are
+\begin{equation}
+  \frac{d r_{m}}{d t} \leq\left(\frac{e_{1} c_{1} \varepsilon}{1+h_{1} \varepsilon}-m_{2}\right) r_{m}
+\end{equation}
+
+Since $\varepsilon>0$ is small enough so that $\frac{e_{1} c_{1} \varepsilon}{1+h_{1} \varepsilon}-m_{2}<0$,
+there exists a $t_{3}>t_{2}$ such that when $t>t_{3}$, there is $0 \leq r_{m}<\varepsilon$.
+
+Finally, it follows from the third and sixth equations of the system(\ref{equation2}) that when $t>t_{3}$, there are
+\begin{equation}
+  \left\{\begin{array}{l}
+    \frac{d U(t)}{d t} \leq\left(\frac{e_{2} c_{2} \varepsilon}{1+h_{2} \varepsilon}+\frac{e_{3} c_{3} \varepsilon}{1+h_{3} \varepsilon}-m_{2}\right) U(t）, t \neq k \tau \\
+    U\left(t^{+}\right)=U(t)+\sigma, t=k \tau                                                                                                                             \\
+    U(0)=U_{0}>0
+  \end{array}\right.
+\end{equation}
+
+Construct the following comparison system.
+\begin{equation}
+  \left\{\begin{array}{l}
+    \frac{d x_{2}(t)}{d t}=\left(\frac{e_{2} c_{2} \varepsilon}{1+h_{2} \varepsilon}+\frac{e_{3} c_{3} \varepsilon}{1+h_{3} \varepsilon}-m_{2}\right) x_{2}(t), t \neq k \tau \\
+    x_{2}\left(t^{+}\right)=x_{2}(t)+\sigma, t=k \tau                                                                                                                         \\
+    x_{2}(0)=U_{0}>0
+  \end{array}\right.
+\end{equation}
+
+Similar to the discussion of the system(\ref{impulse differential equation}), it follows that for $t \in(k \tau,(k+1) \tau], k=0,1, \cdots$, there are
+\begin{equation}
+  \lim _{t \rightarrow \infty} x_{2}(t)=\tilde{x}_{2}(t)=\frac{\sigma \exp \left(\left(\frac{e_{2} c_{2} \varepsilon}
+    {1+h_{2} \varepsilon}+\frac{e_{3} c_{3} \varepsilon}{1+h_{3} \varepsilon}-m_{2}\right)(t-k \tau)\right)}
+  {1-\exp \left(\left(\frac{e_{2} c_{2} \varepsilon}{1+h_{2} \varepsilon}+\frac{e_{3} c_{3} \varepsilon}
+    {1+h_{3} \varepsilon}-m_{2}\right) \tau\right)}
+\end{equation}
+
+Thus for sufficiently small $\varepsilon>0$, there exists $t_{4}>t_{3}$ such that when $t>t_{4}$, there is $x_{2}(t)<\tilde{x}_{2}(t)-\varepsilon$.
+Then, by the comparison theorem, we have
+\begin{equation}
+  U(t) \leq x_{2}(t)<\tilde{x}_{2}(t)+\varepsilon, t>t_{4}
+\end{equation}
+
+To sum up, let $\varepsilon \rightarrow 0$, it can be deduced that,
+when $t \rightarrow \infty$, $H(0) \rightarrow 0, N(0) \rightarrow 0, U(t) \rightarrow \tilde{P}(t)$,
+which shows that $(0, 0, \tilde{P}(t))$ is globally attractive.
+
+In order to ensure the global stability of Sea Lamprey population,
+the conditions of intrinsic growth rate and number of predators of Sea Lamprey are not enough,
+and the environmental capacity of Sea Lamprey should also be considered.
+From the above derivation, it can be seen that if the environmental capacity is small enough,
+or if the environmental capacity is large, but the number of predators increases to a certain level,
+then the population size of the Sea Lamprey is globally asymptotically stable.
+
+\subsection{Energy flow model}
+
+In this paper, we use \textbf{probability theory} to establish an ecologically meaningful probability of success.
+Denote the population size of the predator and the Sea Lamprey by $N_{c}$ and $N_{P}$, respectively.
+Define the probability that each individual sea lamprey meets a predator as $\frac{N_{c}}{N_{c}+N_{P}}$,
+and the probability that it does not meet a predator as $\frac{N_{P}}{N_{c}+N_{P}}$.
+
+So that when the population size of the predator is much larger than the population size of the sea lamprey,
+then the sea lamprey will almost always meet the predator is $\frac{N_{c}}{N_{P}}{N_{c}+N_{P}}$,
+and the probability that the Sea Lamprey meets the predator is $\frac{N_{c}}{N_{c}+N_{P}}\approx 1$.
+
+While when the number of prey is smaller than that of the sea lamprey,
+the sea lamprey will always fail to meet the prey with the probability of non-encounter, $\frac{N_{P}}{N_{c}+N_{P}}\approx 1$.
+
+It can be obtained that, for a Sea Lamprey, out of the $n$ times of foraging, $k$ times will be able to meet the prey,
+and the probability of non-encounter will be $\frac{N_{P}}{N_{c}+N_{P}}\approx 1$.
+
+The probability that a Sea Lamprey will meet a predator $k$ times is $(\frac{N_{c}}{N_{c}+N_{P}})^{K} (\frac{N_{P}}{N_{c}+N_{P}})^{K}$.
+For a fixed number of Sea Lampreys and prey, the average predation success rate of Sea Lampreys is a constant,
+and if it is expressed as $s$.
+
+Then if it is expressed in terms of the number of foraging trips $n$ and the number of encounters $k$,
+there should be $s=\frac{n+1-k}{n}$. That is to say, for the Sea Lamprey, it can only be successful in foraging if it encounters the prey more than $n+1-ns$ times out of $n$ foraging behaviours,
+and we use $k_{0}$ to denote this minimum number of encounters. Then the probability function of predation success for the Sea Lamprey is obtained as
+\begin{equation}
+  P\left(N_c, N_p\right)=\sum_{i=k_0}^n C_n^i\left(\frac{N_c}{N_c+N_p}\right)^i\left(\frac{N_p}{N_c+N_p}\right)^{n-i}
+\end{equation}
+
+Therefore, the number of prey caught by the Sea Lamprey population is $N_{P}P(N_{c}N_{P})$.
+Substituting this probability function into the system gives:
+\begin{equation}
+  \label{probability function}
+  \left\{\begin{array}{l}
+    \frac{d N_c}{d t}=\frac{c_c-B_c-d_c m_c}{m_c+n_c} N_c-\frac{m_c}{m_c+n_c} N_p \sum_{i=k_0}^n C_n^i\left(\frac{N_c}{N_c+N_p}\right)^i\left(\frac{N_p}{N_c+N_p}\right)^{n-i} \\
+    \frac{d N_p}{d t}=-\frac{B_p+d_p m_p}{m_p+n_p} N_p+\frac{m_c u_p}{m_p+n_p} N_p \sum_{i=k_{i j}}^n C_n^i\left(\frac{N_c}{N_c+N_p}\right)^i\left(\frac{N_p}{N_c+N_p}\right)^{n-i}
+  \end{array}\right.
+\end{equation}
+Due to the complex form of the model(\ref{probability function}), it is not possible to obtain the nature of the system through qualitative analysis.
+Therefore, the following numerical simulation is used to give the possible states of the system in a relatively short period of time.
+\begin{figure}[H]
+  \small
+  \centering
+  \includegraphics[width=10cm]{fg2}
+  \caption{Population correlation map}
+  \label{Population correlation map}
+\end{figure}
+
+The phylogenetic state depicted in the figure is that first both populations are growing, then the prey population declines,
+the Sea Lamprey population continues to grow, and eventually both populations begin to grow at the same time.
+
+This curve illustrates that in ecosystems, although there is a decline in the number of predators and an increase in the number of Sea Lampreys,
+the system will not necessarily decline, and it may directly enter a state where two species grow at the same time.
+
+This suggests that under certain special conditions, the relationship between the sea lamprey
+and the prey does not necessarily remain the same as described in the Lotka-Volterra model,
+and the sea lamprey always has the same but lagged variation with the prey.
+In some cases, a decline in predator populations may also be a prelude to an increase in sea lamprey and prey populations.
+
+\subsection{Simulation Results}
+
+In this section, a \textbf{general dynamical model} of the Sea Lamprey-Prey system is derived based on the energy balance equation
+by introducing the concept of probability of predation success.
+
+The nature of this model depends on the selection of the probability of predation success function.
+When the probability of predation success was linearly related to the population size of the Sea Lamprey,
+we obtained a mathematically consistent model with the Lotka-Volterra model,
+which indicated that the general dynamical model of the Sea Lamprey-Prey system based on the energy balance equation and the probability of predation success was reasonable.
+
+This section also discusses the dynamics of the model when the probability of predation success is exponentially correlated
+with the linear correlation of the two populations and when it is consistent with a binomial distribution.
+
+By analysing the model under several different scenarios, we find that the decisive factor affecting
+the stability of the system is the rate of inflow and outflow of energy in the system.
+If the system cannot obtain enough energy or the rate of energy consumption is too large,
+the system will tend to die out. If the system can obtain enough energy to maintain stability,
+the final stable state of the system mainly depends on the distribution of energy between the two populations, i.e.
+the probability of successful predation.
+
+If the probability of successful predation is low for the sea lamprey,
+then the number of sea lampreys that can be accommodated in the system will be reduced,
+or the system will require more predators in order to maintain the survival of the sea lamprey.
+
+
+\subsection{Analysis of the advantages and disadvantages}
+For Sea Lamprey populations, the ability to adjust sex ratios based on resource availability may have complex effects between adaptation and population health.
+
+\textbf{Advantages:}
+\begin{itemize}
+  \item \textbf{Improving the ability of populations to adapt to environmental change.}
+        In resource-rich environments, it may be possible to increase the number of female individuals, thereby increasing reproductive rates.
+        Conversely, in environments where resources are scarce, it may be more beneficial to increase the number of male individuals.
+        This flexibility ensures that populations are able to maximise the use of resources to achieve reproductive success in a variety of environmental conditions.
+  \item \textbf{Positive impact on population growth of the stock.}
+        When there are sufficient numbers of individuals of the appropriate sex in a population, both the rate of reproduction and the likelihood of reproductive success increase.
+        This will directly result in an increase in population size, thus contributing to the survival and stability of the population.
+\end{itemize}
+
+\textbf{Disadvantages:}
+\begin{itemize}
+  \item \textbf{Making populations more vulnerable to human activities.}
+        When humans use chemicals and pheromones to kill Sea Lamprey,
+        the change in sex ratio may result in a large reduction of one of the sexes, leading to an imbalance in the sex ratio.
+\end{itemize}
+
+%\subsection{Cui-Lawson model}
+%In order to better characterize the numerical changes of the Sea Lamprey population, 
+%this paper introduces the Cui-Lawson model\cite{10}, which is a Cui-Lawson model for single population growth.
+
+%The new model of interspecific competition established from the theory of trophic dynamics 
+%is a generalization of the single-population growth model of species competition, 
+%which overcomes the shortcomings and limitations of the Lotka-Volterra competition equation 
+%both theoretically and on the basis of the single-population model, and has a wide range of complex behaviors, 
+%and gives an explanation of competitive behaviors and outcomes that is in line with the basic principles of biology and ecology.
+
+\section{Model of interspecific competition}
+
+\subsection{Model of interspecific competition}
+\textbf{The Lotka-Volterra competition equation} oversimplifies the process of interspecific competition,
+and a large body of literature suggests that the correct model of interspecific competition should be non-linear,
+whereas the Lotka-Volterra competition equation is simply linear
+(linear vs. non-linear in this case refers to whether the relationship between $\frac{\mathrm{d} x}{x\mathrm{d} t} $ and $X$ in the equation is linear or non-linear).
+
+In this section, we study intraspecific competition in the Sea Lamprey by assuming females and males of the Sea Lamprey as two species.
+In this Biological ecological model, we introduced the coefficients of female-to-male and male-to-female competition within the Sea Lamprey population.
+The model equations are as follows:
+
+\begin{equation}
+  \begin{cases}
+    \begin{aligned}
+      \frac{d N_{f}}{d t} & = r_{f} N_{f} \left( \frac{1 - \left( \frac{N_{f} + a_{fm} N_{m}}{K} \right)}{1 - \left( \frac{N_{f} + a_{fm} N_{m}}{K'} \right)} \right) \\
+      \frac{d N_{m}}{d t} & = r_{m} N_{m} \left( \frac{1 - \left( \frac{N_{m} + a_{mf} N_{f}}{K} \right)}{1 - \left( \frac{N_{m} + a_{mf} N_{f}}{K'} \right)} \right) \\
+      \frac{d N}{d t}     & = r N \left( \frac{1 - (N/K)}{1 - (N/K')} \right)
+    \end{aligned}
+  \end{cases}
+\end{equation}
+
+\begin{table}[H]
+  \centering
+  \caption{Notations used in Equation3}
+  \label{Notations used in Equation3}
+  \setlength{\extrarowheight}{0pt}
+  \addtolength{\extrarowheight}{\aboverulesep}
+  \addtolength{\extrarowheight}{\belowrulesep}
+  \setlength{\aboverulesep}{0pt}
+  \setlength{\belowrulesep}{0pt}
+  \begin{tabular}{cc}
+    \specialrule{0.06cm}{0pt}{0.1cm}
+    \rowcolor[rgb]{0.31,0.682,0.867} Symbol & Decription                                                           \\
+    \specialrule{\lightrulewidth}{0.1cm}{0pt}
+    $a_{fm}$                         & Coefficient of female-male competition                               \\
+    $a_{mf}$                         & Coefficient of male-female competition                               \\
+    $K^{'}$                          & Nutritional parameters to environmental conditions resource affinity \\
+    $r$                              & Natural growth rate of Sea Lamprey population                        \\
+    \specialrule{0.06cm}{0pt}{0pt}
+  \end{tabular}
+\end{table}
+
+In order to simplify the model, the competition between two microbial species 1 and 2 with the same nutrient requirements in a nutrient-limited environment
+is firstly investigated. Let the limiting nutrient concentration in the environment be $S_{m}$ initially.
+
+Then after a certain period of time, at $t$, the limiting nutrient concentration decreases to $C$,
+the densities of Species 1 and Species 2 are $X_{1}$ and $X_{2}$, respectively,
+and the limiting nutrient concentrations converted to the biomass of Species 1 and Species 2 are $S_{1} and S_{2}$.
+
+Let $\alpha_{1}$ and $\alpha_{2}$ be the amount of limiting nutrients per unit of biomass for species 1 and 2 respectively, then we have.
+
+\begin{equation}
+  \begin{aligned}
+    & C_{i}=S_{mi}-\left(S_{1}+S_{2}\right)                         \\
+    & S_{1}=\alpha_{1} X_{1}, S_{2}=\alpha_{2} X_{2}           \\
+    & S_{m1}=\alpha_{1} X_{m 1}, \quad S_{m2}=\alpha_{2} X_{m 2}
+  \end{aligned}
+\end{equation}
+
+Where, $X_{m 1}, X_{m 2}$ is the maximum population size of species 1 and 2
+after all limiting nutrients have been consumed when species 1 and 2 are cultivated individually in the environment.
+
+Based on \textbf{the adsorption-plus-transformation reaction formula} in chemical kinetics,
+\textbf{the Michaelis-Menten formula} in enzymatic reaction kinetics, and the Monod equation in microbial growth kinetics,
+which have the same mathematical structure, the Monod equation, for example:
+
+\begin{equation}
+  \frac{d X}{X d t}=\mu_{m} \cdot \frac{C}{k+C}
+\end{equation}
+
+Where $C$ is the limiting nutrient concentration;
+$\mu_{m}$ is the maximum specific growth rate; and $k$ is Mie's constant, reflecting the population's affinity for nutrients.
+
+Given that the mortality rates of species 1 and 2 are constant $D_{1}$ and $D_{2}$, respectively,
+and that the system is open but the net input of nutrients is zero,
+we obtain an equation for interspecific competition between two populations
+with the same nutrient requirements in an open system (e.g., continuous culture).
+We obtain an equation for interspecific competition between two populations
+with the same nutrient requirements in an open system (e.g., continuous culture): $D_{1}$ and $D_{2}$.
+
+\begin{equation}
+  \begin{aligned}
+    \frac{d X_{1}}{d t}= & \mu_{c 1}^{*} X_{1}.\frac{1-\left(X_{1}+\frac{a_{2}}{a_{1}} X_{2}\right) / X_{m 1}^{*}}{1-\left(X_{1}+\frac{a_{2}}{\alpha_{1}} X_{2}\right) X_{m 1}^{\prime}} \\ 
+  \end{aligned}
+\end{equation}
+
+\begin{equation}
+  \begin{aligned}
+    \frac{d X_{2}}{d t}= & \mu_{c 2}^{*} X_{2}.\frac{1-\left(X_{2}+\frac{\alpha_{1}}{\alpha_{2}} X_{1}\right) / X_{m 2}^{*}}{1-\left(X_{2}+\frac{\alpha_{1}}{a_{2}} X_{1}\right) / X_{m 2}^{*}}\\
+  \end{aligned}
+\end{equation}
+
+Where, $\mu_{c i}^{*}=\mu_{c i}-D_{i}$, and
+
+\begin{equation}
+  X_{m i}^{*}=\frac{1-D_{i} / \mu_{i i}}{1-\left(D_{i} / \mu_{\bar{c} i}\right) \cdot\left(X_{m i} / X_{m i}^{\prime}\right)} \cdot X_{m i}
+\end{equation}
+
+$i=1, 2$.
+
+\subsection{The stability of the ecosystem Model}
+The stability of the ecosystem model was developed to simulate the competition between species in an ecosystem.
+In the ecosystem, there are three species: \textbf{prey}, \textbf{predators} and \textbf{parasites}.
+The species will grow and reproduce under fixed resource conditions.
+During the simulation, a random natural catastrophe occurs that affects the number of species and resources in the ecosystem.
+
+\begin{figure}[H]
+  \small
+  \centering
+  \includegraphics[width=12cm]{Sensitive Analysis1}
+  \caption{Population and Resource Change over Time}
+  \label{Population and Resource Change over Time}
+\end{figure}
+
+Over the simulated 100 years, the following trends were observed from Figure \ref{Population and Resource Change over Time}:
+\begin{itemize}
+  \item Both Sea Lamprey and Prey populations showed a fluctuating upward and downward trend.
+        This is mainly due to the renewal of resources and the impact of disaster events.
+        When resources increase, both lamprey and prey populations increase, and when resources decrease or disaster occurs, their populations decrease.
+  \item The population of Parasite continued to increase throughout the simulation,
+        which may be due to the increase in the number of Sea Lampreys.
+        The population size of parasite is closely related to the population of Sea Lamprey.
+  \item The impact of a catastrophic event on the ecosystem is short-lived.
+        In the event of a disaster, the populations of Sea Lamprey, prey, and parasite are all affected, but over time they recover and continue to grow.
+\end{itemize}
+
+\begin{figure}[H]
+  \small
+  \centering
+  \includegraphics[width=12cm]{Sensitive Analysis2}
+  \caption{Ecological Stability Index over Time}
+  \label{Ecological Stability Index over Time}
+\end{figure}
+
+In Figure \ref{Ecological Stability Index over Time} the increase of time, the sensitivity index gradually reaches zero, which indicates that the ecological stability is strong.
+
+\section{Sensitivity and Robustness Analysis}
+
+A parameter is defined as a multiple of the initial number of Sea Lamprey, and by varying this parameter, the Sensitivity and Robustness  of the model is tested.
+\begin{figure}[H]
+  \small
+  \centering
+  \includegraphics[width=12cm]{last2}
+  \caption{Heatmap of Sensitivity and Robustness Analysis}
+  \label{Sensitivity and Robustness Analysis}
+\end{figure}
+
+The Figure \ref{Sensitivity and Robustness Analysis} represents the change in the population size of Sea Lamprey over time for different parameter values. 
+Each row represents a multiple of the starting population size and each column represents the time step of the simulation. 
+Darker colours represent larger populations and lighter colours represent smaller populations. 
+The heat map visualises a periodic fluctuating change in Sea Lamprey numbers as parameter values become larger.
+
+\section{Evaluation of Strengths and Weaknesses}
+\subsection{Strengths}
+Our model offers the following strengths:
+\begin{itemize}
+  \item \textbf{Synthesis:} Using improved Lotka-Volterra competition equations, 
+  these models integrate different aspects, including population structure, ecology, and competition, 
+  allowing us to gain a comprehensive understanding of the ecosystem impacts of the Sea Lamprey.
+  \item \textbf{Accuracy:} The probability function of predation success with ecological significance 
+  was established by combining probability science with the process of analysing the dynamics of populations 
+  using probability science. In this paper, the kinetic equation of population change was derived 
+  by establishing the rate-of-change equation of energy, and an open population dynamics system was established 
+  by organically combining the population and the environment through the medium of energy, 
+  which is of great significance to ecological research.
+  \item \textbf{Impact assessment:} The ability of the model to assess the impacts of different factors on the ecosystem, 
+  including the impacts on the overall ecology and ecosystem stability, 
+  as well as the sensitivity and robustness analyses of the model, 
+  informs the development of fisheries management and conservation measures.
+  \item \textbf{Innovativeness:} The construction of the model is informed by research in other fields, 
+  such as the Lotka-Volterra model based on gophers, 
+  parasitic wasps and ladybirds, an innovation that can provide new perspectives and understanding.
+\end{itemize}
+
+\subsection{Weaknesses and Further Improvements}
+Our model has the following limitations and related improvements:
+\begin{itemize}
+  \item \textbf{Poor migratability:} Because the model was developed to focus on Sea Lamprey in a specific region (Great Lakes), 
+  its applicability and migration may be limited, and its applicability to other regions needs to be further studied and validated.
+  \item \textbf{Modelling limitations:} Although models provide valuable information, 
+  they are still simplifications and approximations of reality and may not cover all factors and situations, e.g., 
+  they are also subject to nutrients, atmospheric composition, precipitation conditions, etc., 
+  which are not represented in the models, and therefore, the actual situation may be different.
+\end{itemize}
+
+\newpage
+\begin{thebibliography}{99}
+  \bibitem{1}https://www.fws.gov/media/s2e3-sea-lampreypdf
+  \bibitem{2}https://www.canada.ca/en/environment-climate-change/services/species-risk-public-registry/cosewic-assessments-status-reports/northern-brook-silver-lamprey-2020.html
+  \bibitem{3}https://www.canada.ca/en/environment-climate-change/services/environmental-indicators/phosphorus-levels-off-shore-great-lakes.html
+  \bibitem{4}https://www.canada.ca/en.html
+  \bibitem{5}http://www.glfc.org/index.php
+  \bibitem{6}https://www.canada.ca/en/environment-climate-change/services/species-risk-public-registry/cosewic-assessments-status-reports/northern-brook-silver-lamprey-2020.html
+  \bibitem{7}http://www.glfc.org/sea-lamprey-lifecycle.php
+  \bibitem{8}Heinrich, J. W., et al. (1980). "Changes in Biological Characteristics of the Sea Lamprey (Petromyzon marinus) as Related to Lamprey Abundance, Prey Abundance, and Sea Lamprey Control." Canadian Journal of Fisheries and Aquatic Sciences 37(11): 1861-1871.
+  \bibitem{9}Nakazawa, T. and Yamamura, N. (2006), Community structure and stability analysis for intraguild interactions among host, parasitoid, and predator. Popul Ecol, 48: 139-149.
+  \bibitem{10}Mingzhan Huang, Shouzong Liu, Ying Zhang. Mathematical modeling and analysis of biological control strategy of aphid population[J]. AIMS Mathematics, 2022, 7(4): 6876-6897.
+\end{thebibliography}
+\newpage
+\begin{appendices}
+  \section{Report on Use of AI}
+  \begin{enumerate}
+    \item \textbf{Open AI:} GPT-3.5 (April 2023)\\
+          \textbf{Query1:} The metamorphosis process of the Sea Lamprey\\
+          \textbf{Output:} The Sea Lamprey is a primitive deep-sea creature that undergoes a unique metamorphosis process. Here is a brief description of the Sea Lamprey metamorphosis:
+          Hatching: The metamorphosis process of Sea Lamprey begins with the hatching of the eggs. After hatching, a creature called a larva is produced.
+          Larval stage: The larval stage is the first phase of Sea Lamprey metamorphosis. They are usually smaller than adult individuals and do not have fully developed gills. During this stage, they mainly feed on plankton and float in the ocean.
+          Metamorphosis: During the metamorphosis process of Sea Lamprey, the larvae undergo a series of transformations, eventually developing into adult individuals. In this process, their body shape and organs undergo significant changes, ultimately adapting to deep-sea life.
+          Adult stage: Once the metamorphosis is complete, Sea Lamprey enter the adult stage. Their bodies become larger, and their gills fully develop. Adult Sea Lamprey typically live in the deep sea, feeding on other marine organisms.
+          In summary, the metamorphosis process of Sea Lamprey is a complex and mysterious process. They live in the deep sea, and their understanding is important for our knowledge of the ecology and evolutionary history of deep-sea organisms.
+    \item \textbf{Open AI:} GPT-3.5 (April 2023)\\
+          \textbf{Query1:} The method for drawing a heatmap\\
+          \textbf{Output:} Heatmap is a visualization method that uses color to represent the intensity, density, or other attributes of data. Here is a common method for creating a heatmap:
+          Prepare the data: Firstly, you need to prepare the data, which is typically a two-dimensional data matrix. Each cell contains a value representing a certain attribute or indicator. For example, you might have a table where rows represent one category, columns represent another category, and each cell value represents the intersection of these two categories.
+          Select a plotting tool: Choose a suitable plotting tool. Common options include the matplotlib library in Python, the ggplot2 package in R, and D3.js in JavaScript.
+          Draw the heatmap: Use the selected plotting tool to transform the data into a heatmap. Generally, the function for drawing a heatmap will take the data matrix as input and choose colors based on the size of the values. Typically, cells with larger values will have darker colors, while cells with smaller values will have lighter colors.
+          Add labels and annotations: You can add row labels, column labels, and other annotations to the heatmap to help the audience understand the meaning of the data.
+          Adjust colors and scales: Depending on the requirements, adjust the color mapping and the scale of the values to make the heatmap more intuitive and easy to understand.
+          The method for creating a heatmap varies depending on the tool used, but typically follows the basic steps outlined above. I hope these steps will help you create a clear and easy-to-understand heatmap.
+    \item \textbf{Open AI:} GPT-3.5 (April 2023)\\
+          \textbf{Query1:} How to draw a bubble chart\\
+          \textbf{Output:} Bubble chart is a type of chart used for visualizing data, typically used to display the relationship between three variables. Here is a common method for creating a bubble chart:
+          Prepare the data: First, you need to prepare the data, usually three columns representing the X-axis, Y-axis, and bubble size. These data can represent different categories or actual numerical values.
+          Select a plotting tool: Choose a suitable plotting tool, commonly used ones include the matplotlib library in Python, the ggplot2 package in R, and D3.js in JavaScript.
+          Draw the bubble chart: Use the selected plotting tool to convert the prepared data into a bubble chart. Typically, the bubble chart will use the numerical values on the X and Y axes as coordinates, with the size of the bubbles representing the value of the third variable.
+          Adjust the bubble style: Depending on the requirements, you can adjust the color, transparency, border style of the bubbles, making the bubble chart more intuitive and easy to understand.
+          Add labels and annotations: You can add labels, annotations, and other additional information to the bubble chart to help the audience understand the data.
+          Adjust the axes and titles: As needed, adjust the scales, labels, and add chart titles for the X and Y axes to make the bubble chart more complete.
+          The method for creating a bubble chart varies depending on the tool used, but typically follows the basic steps outlined above. Hopefully, these steps will help you create a clear and easy-to-understand bubble chart.
+    \item \textbf{Open AI:} GPT-3.5 (April 2023)\\
+          \textbf{Query1:} The history of the sea lamprey\\
+          \textbf{Output:} The Sea Lamprey is an ancient deep-sea creature, with a history dating back to the Paleozoic era nearly 500 million years ago. Sea Lamprey are primitive jawless fish, belonging to the class Agnatha, and they exhibit ancient and primitive characteristics.
+          Although the history of Sea Lamprey can be traced back to the Paleozoic era, their existence on Earth has not been as extensively studied as some other ancient organisms. This is mainly due to the fact that Sea Lamprey live in the deep sea, making them extremely difficult for scientists to observe and study. As a result, our understanding of the history and evolutionary processes of Sea Lamprey is relatively limited.
+          However, through the study of fossil records and molecular biology, scientists believe that Sea Lamprey are ancient organisms, with ancestors that likely existed in the distant past. Throughout the process of evolution, Sea Lamprey have retained many ancient features, such as their primitive reproductive methods and external characteristics. This has made Sea Lamprey an important subject for the study of biological evolution and deep-sea ecosystems.
+          In summary, Sea Lamprey, as an ancient deep-sea creature, has a history that dates back to the Paleozoic era, with a very ancient lineage. However, due to their living environment and the challenges of research, there are still many unknowns regarding the history and evolutionary processes of Sea Lamprey, necessitating further scientific research to unveil their mysteries.
+
+  \end{enumerate}
+  \end{appendices}
+
+
+
+\end{document}
+

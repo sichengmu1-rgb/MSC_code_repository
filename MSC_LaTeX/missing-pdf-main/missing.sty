@@ -1,0 +1,353 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{missing}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 引入宏包
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\RequirePackage[inner=1.5in,outer=1.25in,vmargin=1in]{geometry}
+\RequirePackage{cmbright}
+\RequirePackage[quiet]{fontspec}
+\RequirePackage{amsmath,amssymb}
+\RequirePackage{graphicx,float,booktabs,array}
+\RequirePackage[x11names]{xcolor}
+\RequirePackage{wrapfig,tikz,pdfpages}
+\RequirePackage{tcolorbox}
+\RequirePackage[fontset=none,zihao=false,scheme=chinese,heading=true,punct=kaiming]{ctex}
+\RequirePackage{xeCJKfntef}
+\RequirePackage[os=win]{menukeys}
+\RequirePackage{pst-barcode}
+\RequirePackage{ifplatform}
+\RequirePackage{fancyvrb}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 格式
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\RequirePackage{hyperref}
+\hypersetup{
+  colorlinks,%
+  linkcolor=red!80!black,%
+  bookmarksnumbered=true%
+}
+
+\RequirePackage{bookmark}
+
+% 字体
+\setmainfont{Inter}[Numbers = Monospaced]
+\setsansfont{Inter}[Numbers = Monospaced]
+\setmonofont{等距更纱黑体 Slab SC}
+
+\xeCJKsetup{
+  underline/skip  = false,
+  AutoFakeSlant   = true
+}
+
+\xeCJKDeclareSubCJKBlock{Windows}{"E782, "EC6A}
+\xeCJKDeclareSubCJKBlock{Icons}{"E001 -> "E781, "E783 -> "EC64, "EC6C -> "F8B3}
+\xeCJKDeclareSubCJKBlock{Symbols}{"22EF, "2261}
+
+\setCJKmainfont{思源黑体}[BoldFont=思源黑体 Bold, Windows=Office Support MDL2 Assets, Icons=Segoe Fluent Icons, Mapping=quote, Symbols=思源黑体]
+\setCJKsansfont{思源黑体}[BoldFont=思源黑体 Bold, Windows=Office Support MDL2 Assets, Icons=Segoe Fluent Icons, Mapping=quote, Symbols=思源黑体]
+\setCJKmonofont{等距更纱黑体 Slab SC}
+
+% 如果单纯用 punct=kaiming，实际上部分句末点号的宽度还是撑不到 1em。
+% 所以手动指派这三个句末点号的宽度好了。
+\xeCJKsetwidth{。？！}{1em}
+\xeCJKsetkern{」}{？}{1pt}
+\xeCJKsetkern{】}{。}{1pt}
+
+% tcolorbox包
+\tcbuselibrary{skins, raster, theorems, breakable}
+
+% menukeys包
+\renewmenumacro{\keys}[+]{roundedkeys}
+
+% 页眉页脚
+\RequirePackage{fancyhdr}
+
+\fancyhf{}
+\fancyhead[OR]{\bfseries\thepage}
+\fancyhead[OL]{\bfseries\rightmark}
+\fancyhead[ER]{\bfseries\leftmark}
+\fancyhead[EL]{\bfseries\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\setlength{\headheight}{12.5pt}
+
+\pagestyle{fancy}
+
+% 目录
+\renewcommand\@pnumwidth{2em}
+\renewcommand\tableofcontents%
+  {\renewcommand\thefootnote{\fnsymbol{footnote}}%
+    \chapter{\contentsname%
+    \protect\@mkboth{\contentsname}{\contentsname}}%
+    \@starttoc{toc}%
+    \addfontfeatures{RawFeature=-tnum}
+    \renewcommand\thefootnote{\arabic{footnote}}%
+}
+
+%
+% 部分、章节的标题
+%
+
+% 修复 \chapter* 的页眉问题
+
+\renewcommand{\@schapter}[1]{%
+  \CTEX@ifnamefalse
+  \CTEX@makeanchor@schapter{\Hy@chapapp*}%
+  \CTEX@gettitle{#1}%
+  \chaptermark{#1}%
+  \if@twocolumn
+    \@topnewpage[\@makeschapterhead{#1}]%
+  \else
+    \@makeschapterhead{#1}%
+    \@afterheading
+  \fi
+}
+
+% 「部分」的格式
+
+\newcommand{\partformat}[1]{
+  \raggedright
+  \tikz[remember picture,overlay] \node at (current page.center) {\includegraphics{assets/missing-parts-bg.pdf}};
+  \hspace*{6cm}\parbox[t]{21em}{\vspace*{1.5cm}#1}
+}
+
+\newcommand{\partaftername}{
+  \CTEXifname{
+    \par\vskip10pt{\fontsize{24pt}{24pt}\selectfont\color{DeepSkyBlue3}PART \thepart}\par\vskip20pt
+  }{
+    \par\vskip10pt{\fontsize{24pt}{24pt}\selectfont\color{DeepSkyBlue3}APPENDIX}\par\vskip20pt
+  }
+}
+
+\newcommand{\partaftertitle}{%
+  \par\vskip22pt%
+  {\fontsize{14.2pt}{14pt}\selectfont\color{DeepSkyBlue3}
+    YOUR MISSING SEMESTER\par
+    \fontsize{17pt}{13pt}\selectfont
+    OF USING COMPUTER\par
+  }
+}
+
+% 自定义图标的格式
+
+\newcounter{noheadchap}
+\def\noheadsymb#1{\expandafter\@noheadsymb\csname c@#1\endcsname}
+\def\@noheadsymb#1{%
+  \ifcase#1%
+    \or \or \or %
+    \else\@ctrerr
+  \fi
+}
+\renewcommand\thenoheadchap{\noheadsymb{noheadchap}}
+\setcounter{noheadchap}{0}
+
+\def\chaptersymb#1{\expandafter\@chaptersymb\csname c@#1\endcsname}
+\def\@chaptersymb#1{%
+  \ifcase#1%
+    % 按照「部分」分割
+    \or \or \or \or \or \or% 第一部分
+    \or \or \or \or \or% 第二部分
+    \or \or \or \or \or% 第三部分
+    \or % 备用
+    \else\@ctrerr
+  \fi
+}
+
+\def\appendixsymb#1{\expandafter\@appendixsymb\csname c@#1\endcsname}
+\def\@appendixsymb#1{%
+  \ifcase#1%
+    \or \or 
+    \else\@ctrerr
+  \fi
+}
+
+% 「章节」的格式
+
+\newcommand{\chapterformat}[1]{
+  \CTEXifname{
+    \bfseries\raggedright
+    #1
+  }{
+    \bfseries\raggedright
+    \stepcounter{noheadchap}
+    {\Huge\color{DeepSkyBlue3}\noindent\parbox[t][.3ex][b]{6em}{\thenoheadchap}\par}
+    \hspace*{.2cm}#1
+  }
+}
+
+\newcommand{\chapteraftername}{\hspace*{1cm}
+  \renewcommand{\thechapter}{\chaptersymb{chapter}}
+  {\Huge\color{DeepSkyBlue3}\parbox[t][.3ex][b]{6em}{\thechapter}\par}
+  \renewcommand{\thechapter}{\chinese{chapter}}
+  {\fontsize{5pt}{5pt}\color{DeepSkyBlue3}\rule[3pt]{15em}{1.5pt}\par}
+}
+
+\let\oldappendix\appendix
+\renewcommand{\appendix}{
+  \oldappendix%
+  \renewcommand{\chapteraftername}{\hspace*{1cm}
+    \renewcommand{\thechapter}{\appendixsymb{chapter}}
+    {\Huge\color{DeepSkyBlue3}\parbox[t][.3ex][b]{6em}{\thechapter}\par}
+    \renewcommand{\thechapter}{\Alph{chapter}}
+    {\fontsize{5pt}{5pt}\color{DeepSkyBlue3}\rule[3pt]{13em}{1.5pt}\par}
+  }
+}
+
+\ctexset{
+  part = {
+    pagestyle   = empty,
+    format      = \partformat,
+    nameformat  = \bfseries\fontsize{32pt}{38pt}\selectfont\noindent\color{DeepSkyBlue3},
+    aftername   = \partaftername,
+    titleformat = \fontsize{64pt}{72pt}\selectfont,
+    aftertitle  = \partaftertitle,
+  },
+  chapter = {
+    format      = \chapterformat,
+    nameformat  = \huge\noindent\color{DeepSkyBlue3},
+    aftername   = \chapteraftername,
+    titleformat = \Huge,
+    beforeskip  = 18pt,
+  },
+}
+
+% 列表
+\renewcommand{\theenumii}{\Alph{enumii}}
+
+% 禁止随意断词
+\hyphenation{macOS}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 空白双数页
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\renewcommand{\cleardoublepage}
+  {\clearpage
+  \if@twoside
+    \ifodd
+      \c@page
+    \else
+      \hbox{}
+      \thispagestyle{empty}
+      \newpage
+      \if@twocolumn
+        \hbox{}
+        \newpage
+      \fi
+    \fi
+  \fi}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 自定义命令
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% 强调文字
+\newcommand{\regcolor}[1]{\textbf{{\color{DodgerBlue2} #1}}}
+
+% 禁止乱加空格
+\let\oldtexttt\texttt
+\def\clearglue{\xeCJKsetup{CJKecglue = {}}}
+\def\restoreglue{\xeCJKsetup{CJKecglue = { }}}
+\renewcommand{\texttt}[1]{
+  \protect\clearglue
+  \oldtexttt{#1}
+  \protect\restoreglue
+}
+
+% 标题页
+\renewcommand{\maketitle}{%
+  \begin{titlepage}
+    \pdfbookmark{标题页}{title}
+    \thispagestyle{empty}
+    \includepdf[pages=1]{assets/missing-cover.pdf}
+    \clearpage
+    \pdfbookmark{版权信息页}{copyright}
+    \setlength{\parskip}{0.3cm}
+    \setlength{\parindent}{0em}
+    排版时间：\@date \\
+    排版环境：
+    \ifwindows
+      Windows NT \\
+    \fi
+    \iflinux
+      Linux \\
+    \fi
+    \ifmacosx
+      macOS \\
+    \fi
+    \ifcygwin
+      Cygwin \\
+    \fi
+    内容提交哈希：\texttt{\input{chapters/commit}} \\
+    小样提交哈希：\texttt{\input{.git/refs/heads/main}} \\
+    \begin{pspicture}(2in,0.6in)
+      \psbarcode[file]{.git/refs/heads/main}{height=0.4}{pdf417}
+    \end{pspicture}
+    \vfill
+    \includegraphics[width=4cm]{assets/by-nc-sa.png}\par
+    \textcopyright 2022 Hans Wan \& Windy Deng\par
+    本作品所有文字采用「知识共享\ 署名-非商业性使用-相同方式共享 4.0 国际」许可协议进行许可。
+    要查看该许可协议，可访问 \url{http://creativecommons.org/licenses/by-nc-sa/4.0/}
+    或者写信到 Creative Commons, PO Box 1866, Mountain View, CA 94042, USA。\par
+    为便于进行教学，文中引用了一些来自互联网公开资源的图片及其他非我们原创的内容。
+    这些内容的著作权归属它们的原作者和 / 或版权所有方所有。
+    若有侵权请联系我们删除。
+    我们对这些内容的作者表示感谢。\par
+    文中出现的所有商标，无论是否标注有 ® 或 ™，其所有权都归属它们各自的持有者所有。\par
+    \vspace{2ex}
+    \small
+    Segoe Fluent Icons, Office Support MDL2 Assets \textcopyright Microsoft Corporation. All Rights Reserved.\par
+    \clearpage
+    \setlength{\parskip}{0pt plus 1pt}
+    \setlength{\parindent}{2em}
+  \end{titlepage}
+}%
+
+% 自定义盒子
+\newtcolorbox{note}{
+  enhanced,
+  frame hidden,
+  breakable=true,
+  arc=0mm,
+  detach title,
+  borderline west={.5mm}{0mm}{RoyalBlue4},
+  colback=white,
+  colbacktitle=RoyalBlue4,
+  colframe=RoyalBlue4
+}
+
+\newtcolorbox{intro}{
+  colback=LightBlue1,
+  colframe=DeepSkyBlue3,
+  fonttitle=\bfseries,
+  title=本章导览
+}
+
+\newtcolorbox{warning}{
+  enhanced,
+  breakable=true,
+  top=4mm,
+  colframe=Firebrick2,
+  colback=white,
+  colbacktitle=Firebrick2,
+  coltext=Firebrick1,
+  coltitle=white,
+  attach boxed title to top left={xshift=.5cm, yshift=-\tcboxedtitleheight/2},
+  fonttitle=\bfseries,
+  fontupper=\bfseries,
+  title={
+    \tikz {
+      \draw[rounded corners=.5pt, line width=.8pt, draw=black, fill=yellow] (0,0) -- (0:10pt) -- (60:10pt) -- cycle;
+      \draw[line width=1pt, line cap=round, draw=black] (5pt,3pt) -- (5pt,6pt);
+      \fill[black] (5pt,1.5pt) circle [radius=.7pt];
+    }
+    警告
+  }
+}
+
+% 练习
+\newcommand{\practice}{\section*{练习 \thechapter}\addcontentsline{toc}{section}{练习 \thechapter}}

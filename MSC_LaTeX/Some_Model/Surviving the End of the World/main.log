@@ -1,0 +1,331 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.12.20)  30 MAR 2024 01:35
+entering extended mode
+ restricted \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**main
+(./main.tex
+LaTeX2e <2022-11-01> patch level 1
+L3 programming layer <2023-02-22> (./diazessay.cls
+Document Class: diazessay 2019/01/13 Diaz Essay class v1.0
+(d:/LaTex/texlive/2023/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2022/07/02 v1.4n Standard LaTeX document class
+(d:/LaTex/texlive/2023/texmf-dist/tex/latex/base/size11.clo
+File: size11.clo 2022/07/02 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count185
+\c@section=\count186
+\c@subsection=\count187
+\c@subsubsection=\count188
+\c@paragraph=\count189
+\c@subparagraph=\count190
+\c@figure=\count191
+\c@table=\count192
+\abovecaptionskip=\skip48
+\belowcaptionskip=\skip49
+\bibindent=\dimen140
+) (d:/LaTex/texlive/2023/texmf-dist/tex/generic/babel/babel.sty
+Package: babel 2023/02/13 3.86 The Babel package
+\babel@savecnt=\count193
+\U@D=\dimen141
+\l@unhyphenated=\language87
+ (d:/LaTex/texlive/2023/texmf-dist/tex/generic/babel/txtbabel.def)
+\bbl@readstream=\read2
+\bbl@dirlevel=\count194
+ (d:/LaTex/texlive/2023/texmf-dist/tex/generic/babel-english/english.ldf
+Language: english 2017/06/06 v3.3r English support from the babel system
+Package babel Info: Hyphen rules for 'canadian' set to \l@english
+(babel)             (\language0). Reported on input line 102.
+Package babel Info: Hyphen rules for 'australian' set to \l@ukenglish
+(babel)             (\language21). Reported on input line 105.
+Package babel Info: Hyphen rules for 'newzealand' set to \l@ukenglish
+(babel)             (\language21). Reported on input line 108.
+)) (d:/LaTex/texlive/2023/texmf-dist/tex/generic/babel/locale/en/babel-english.tex
+Package babel Info: Importing font and identification data for english
+(babel)             from babel-en.ini. Reported on input line 11.
+) (d:/LaTex/texlive/2023/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
+ (d:/LaTex/texlive/2023/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
+\KV@toks@=\toks16
+) (d:/LaTex/texlive/2023/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2022/03/10 v1.4e Standard LaTeX Graphics (DPC,SPQR)
+ (d:/LaTex/texlive/2023/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2021/08/11 v1.11 sin cos tan (DPC)
+) (d:/LaTex/texlive/2023/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 107.
+ (d:/LaTex/texlive/2023/texmf-dist/tex/latex/graphics-def/pdftex.def
+File: pdftex.def 2022/09/22 v1.2b Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen142
+\Gin@req@width=\dimen143
+) (d:/LaTex/texlive/2023/texmf-dist/tex/latex/wrapfig/wrapfig.sty
+\wrapoverhang=\dimen144
+\WF@size=\dimen145
+\c@WF@wrappedlines=\count195
+\WF@box=\box51
+\WF@everypar=\toks17
+Package: wrapfig 2003/01/31  v 3.6
+) (d:/LaTex/texlive/2023/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
+\heavyrulewidth=\dimen146
+\lightrulewidth=\dimen147
+\cmidrulewidth=\dimen148
+\belowrulesep=\dimen149
+\belowbottomsep=\dimen150
+\aboverulesep=\dimen151
+\abovetopsep=\dimen152
+\cmidrulesep=\dimen153
+\cmidrulekern=\dimen154
+\defaultaddspace=\dimen155
+\@cmidla=\count196
+\@cmidlb=\count197
+\@aboverulesep=\dimen156
+\@belowrulesep=\dimen157
+\@thisruleclass=\count198
+\@lastruleclass=\count199
+\@thisrulewidth=\dimen158
+) (d:/LaTex/texlive/2023/texmf-dist/tex/latex/enumitem/enumitem.sty
+Package: enumitem 2019/06/20 v3.9 Customized lists
+\labelindent=\skip50
+\enit@outerparindent=\dimen159
+\enit@toks=\toks18
+\enit@inbox=\box52
+\enit@count@id=\count266
+\enitdp@description=\count267
+) (d:/LaTex/texlive/2023/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2020/01/02 v5.9 Page Geometry
+ (d:/LaTex/texlive/2023/texmf-dist/tex/generic/iftex/ifvtex.sty
+Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
+ (d:/LaTex/texlive/2023/texmf-dist/tex/generic/iftex/iftex.sty
+Package: iftex 2022/02/03 v1.0f TeX engine tests
+))
+\Gm@cnth=\count268
+\Gm@cntv=\count269
+\c@Gm@tempcnt=\count270
+\Gm@bindingoffset=\dimen160
+\Gm@wd@mp=\dimen161
+\Gm@odd@mp=\dimen162
+\Gm@even@mp=\dimen163
+\Gm@layoutwidth=\dimen164
+\Gm@layoutheight=\dimen165
+\Gm@layouthoffset=\dimen166
+\Gm@layoutvoffset=\dimen167
+\Gm@dimlist=\toks19
+) (d:/LaTex/texlive/2023/texmf-dist/tex/latex/base/inputenc.sty
+Package: inputenc 2021/02/14 v1.3d Input encoding file
+\inpenc@prehook=\toks20
+\inpenc@posthook=\toks21
+) (d:/LaTex/texlive/2023/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
+) (d:/LaTex/texlive/2023/texmf-dist/tex/latex/psnfss/mathpazo.sty
+Package: mathpazo 2020/03/25 PSNFSS-v9.3 Palatino w/ Pazo Math (D.Puga, WaS) 
+\symupright=\mathgroup4
+) (d:/LaTex/texlive/2023/texmf-dist/tex/latex/microtype/microtype.sty
+Package: microtype 2023/03/13 v3.1a Micro-typographical refinements (RS)
+ (d:/LaTex/texlive/2023/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+Package: etoolbox 2020/10/05 v2.5k e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count271
+)
+\MT@toks=\toks22
+\MT@tempbox=\box53
+\MT@count=\count272
+LaTeX Info: Redefining \noprotrusionifhmode on input line 1059.
+LaTeX Info: Redefining \leftprotrusion on input line 1060.
+\MT@prot@toks=\toks23
+LaTeX Info: Redefining \rightprotrusion on input line 1078.
+LaTeX Info: Redefining \textls on input line 1368.
+\MT@outer@kern=\dimen168
+LaTeX Info: Redefining \textmicrotypecontext on input line 1988.
+\MT@listname@count=\count273
+ (d:/LaTex/texlive/2023/texmf-dist/tex/latex/microtype/microtype-pdftex.def
+File: microtype-pdftex.def 2023/03/13 v3.1a Definitions specific to pdftex (RS)
+LaTeX Info: Redefining \lsstyle on input line 902.
+LaTeX Info: Redefining \lslig on input line 902.
+\MT@outer@space=\skip51
+)
+Package microtype Info: Loading configuration file microtype.cfg.
+ (d:/LaTex/texlive/2023/texmf-dist/tex/latex/microtype/microtype.cfg
+File: microtype.cfg 2023/03/13 v3.1a microtype main configuration file (RS)
+)) (d:/LaTex/texlive/2023/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
+Package: fancyhdr 2022/11/09 v4.1 Extensive control of page headers and footers
+\f@nch@headwidth=\skip52
+\f@nch@O@elh=\skip53
+\f@nch@O@erh=\skip54
+\f@nch@O@olh=\skip55
+\f@nch@O@orh=\skip56
+\f@nch@O@elf=\skip57
+\f@nch@O@erf=\skip58
+\f@nch@O@olf=\skip59
+\f@nch@O@orf=\skip60
+))
+LaTeX Font Info:    Trying to load font information for T1+ppl on input line 36.
+ (d:/LaTex/texlive/2023/texmf-dist/tex/latex/psnfss/t1ppl.fd
+File: t1ppl.fd 2001/06/04 font definitions for T1/ppl.
+) (d:/LaTex/texlive/2023/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
+File: l3backend-pdftex.def 2023-01-16 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count274
+\l__pdf_internal_box=\box54
+)
+No file main.aux.
+\openout1 = `main.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+(d:/LaTex/texlive/2023/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count275
+\scratchdimen=\dimen169
+\scratchbox=\box55
+\nofMPsegments=\count276
+\nofMParguments=\count277
+\everyMPshowfont=\toks24
+\MPscratchCnt=\count278
+\MPscratchDim=\dimen170
+\MPnumerator=\count279
+\makeMPintoPDFobject=\count280
+\everyMPtoPDFconversion=\toks25
+) (d:/LaTex/texlive/2023/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
+ (d:/LaTex/texlive/2023/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
+))
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(113.81102pt, 369.88583pt, 113.81102pt)
+* v-part:(T,H,B)=(71.13188pt, 688.5567pt, 85.35826pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=369.88583pt
+* \textheight=688.5567pt
+* \oddsidemargin=41.54103pt
+* \evensidemargin=41.54103pt
+* \topmargin=-43.81721pt
+* \headheight=21.33955pt
+* \headsep=21.33955pt
+* \topskip=11.0pt
+* \footskip=42.67912pt
+* \marginparwidth=59.0pt
+* \marginparsep=10.0pt
+* \columnsep=10.0pt
+* \skip\footins=10.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+\big@size=\dimen171
+LaTeX Info: Redefining \microtypecontext on input line 36.
+Package microtype Info: Applying patch `item' on input line 36.
+Package microtype Info: Applying patch `toc' on input line 36.
+Package microtype Info: Applying patch `eqnum' on input line 36.
+Package microtype Info: Applying patch `footnote' on input line 36.
+Package microtype Info: Applying patch `verbatim' on input line 36.
+Package microtype Info: Generating PDF output.
+Package microtype Info: Character protrusion enabled (level 2).
+Package microtype Info: Using default protrusion set `alltext'.
+Package microtype Info: Automatic font expansion enabled (level 2),
+(microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
+Package microtype Info: Using default expansion set `alltext-nott'.
+LaTeX Info: Redefining \showhyphens on input line 36.
+Package microtype Info: No adjustment of tracking.
+Package microtype Info: No adjustment of interword spacing.
+Package microtype Info: No adjustment of character kerning.
+(d:/LaTex/texlive/2023/texmf-dist/tex/latex/microtype/mt-ppl.cfg
+File: mt-ppl.cfg 2005/11/16 v1.6 microtype config. file: Palatino (RS)
+)
+
+LaTeX Warning: Citation `Smith:2012qr' on page 1 undefined on input line 60.
+
+
+LaTeX Warning: Citation `Smith:2013jd' on page 1 undefined on input line 60.
+
+[1
+
+{d:/LaTex/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{d:/LaTex/texlive/2023/texmf-dist/fonts/enc/dvips/base/8r.enc}]
+<Figures//fish.png, id=9, 211.79124pt x 158.5925pt>
+File: Figures//fish.png Graphic file (type png)
+<use Figures//fish.png>
+Package pdftex.def Info: Figures//fish.png  used on input line 72.
+(pdftex.def)             Requested size: 155.35136pt x 116.33296pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 70--74
+\T1/ppl/m/n/10.95 (+20) risus eu nunc ac-cum-san condi-men-tum at sed ip-sum.
+ []
+
+LaTeX Font Info:    Trying to load font information for TS1+ppl on input line 78.
+(d:/LaTex/texlive/2023/texmf-dist/tex/latex/psnfss/ts1ppl.fd
+File: ts1ppl.fd 2001/06/04 font definitions for TS1/ppl.
+) [2 <./Figures//fish.png>]
+LaTeX Font Info:    Trying to load font information for OT1+ppl on input line 101.
+ (d:/LaTex/texlive/2023/texmf-dist/tex/latex/psnfss/ot1ppl.fd
+File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
+)
+LaTeX Font Info:    Trying to load font information for OML+zplm on input line 101.
+ (d:/LaTex/texlive/2023/texmf-dist/tex/latex/psnfss/omlzplm.fd
+File: omlzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OML/zplm.
+)
+LaTeX Font Info:    Trying to load font information for OMS+zplm on input line 101.
+ (d:/LaTex/texlive/2023/texmf-dist/tex/latex/psnfss/omszplm.fd
+File: omszplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMS/zplm.
+)
+LaTeX Font Info:    Trying to load font information for OMX+zplm on input line 101.
+ (d:/LaTex/texlive/2023/texmf-dist/tex/latex/psnfss/omxzplm.fd
+File: omxzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMX/zplm.
+)
+LaTeX Font Info:    Trying to load font information for OT1+zplm on input line 101.
+ (d:/LaTex/texlive/2023/texmf-dist/tex/latex/psnfss/ot1zplm.fd
+File: ot1zplm.fd 2002/09/08 Fontinst v1.914 font definitions for OT1/zplm.
+)
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `zplm' (encoding: OT1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+
+No file main.bbl.
+[3] (./main.aux)
+
+LaTeX Warning: There were undefined references.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 6398 strings out of 476025
+ 104948 string characters out of 5791020
+ 1858382 words of memory out of 5000000
+ 26603 multiletter control sequences out of 15000+600000
+ 544403 words of font info for 174 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 72i,11n,76p,997b,233s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<d:/LaTex/texlive/2023/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb><d:/LaTex/texlive/2023/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb><d:/LaTex/texlive/2023/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb>
+Output written on main.pdf (3 pages, 70001 bytes).
+PDF statistics:
+ 32 PDF objects out of 1000 (max. 8388607)
+ 18 compressed objects within 1 object stream
+ 0 named destinations out of 1000 (max. 500000)
+ 58886 words of extra memory for PDF output out of 61914 (max. 10000000)
+

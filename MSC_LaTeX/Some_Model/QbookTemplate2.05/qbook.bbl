@@ -1,0 +1,87 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nty/global//global/global/global}
+    \entry{G03}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=774a7bf1b3cd6f56860910e420ede515}{%
+           family={Navarro},
+           familyi={N\bibinitperiod},
+           given={Gabriel},
+           giveni={G\bibinitperiod}}}%
+      }
+      \strng{namehash}{774a7bf1b3cd6f56860910e420ede515}
+      \strng{fullhash}{774a7bf1b3cd6f56860910e420ede515}
+      \strng{fullhashraw}{774a7bf1b3cd6f56860910e420ede515}
+      \strng{bibnamehash}{774a7bf1b3cd6f56860910e420ede515}
+      \strng{authorbibnamehash}{774a7bf1b3cd6f56860910e420ede515}
+      \strng{authornamehash}{774a7bf1b3cd6f56860910e420ede515}
+      \strng{authorfullhash}{774a7bf1b3cd6f56860910e420ede515}
+      \strng{authorfullhashraw}{774a7bf1b3cd6f56860910e420ede515}
+      \field{sortinit}{N}
+      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{\textbf{\textit{American Mathematical Monthly}}}
+      \field{number}{2}
+      \field{title}{On the fundamental theorem of finite abelian groups}
+      \field{volume}{110}
+      \field{year}{2003}
+      \true{nocite}
+      \field{pages}{153\bibrangedash 154}
+      \range{pages}{2}
+    \endentry
+    \entry{EK85}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=2c80c3919840049ea86b266ba8d5f118}{%
+           family={Turner},
+           familyi={T\bibinitperiod},
+           given={Ed},
+           giveni={E\bibinitperiod}}}%
+        {{hash=47a5b196d6711733c92d02d81c4c5f02}{%
+           family={Gold},
+           familyi={G\bibinitperiod},
+           given={Karen},
+           giveni={K\bibinitperiod}}}%
+      }
+      \strng{namehash}{05530a45799677e9d7fd85d8c50d237d}
+      \strng{fullhash}{05530a45799677e9d7fd85d8c50d237d}
+      \strng{fullhashraw}{05530a45799677e9d7fd85d8c50d237d}
+      \strng{bibnamehash}{05530a45799677e9d7fd85d8c50d237d}
+      \strng{authorbibnamehash}{05530a45799677e9d7fd85d8c50d237d}
+      \strng{authornamehash}{05530a45799677e9d7fd85d8c50d237d}
+      \strng{authorfullhash}{05530a45799677e9d7fd85d8c50d237d}
+      \strng{authorfullhashraw}{05530a45799677e9d7fd85d8c50d237d}
+      \field{sortinit}{T}
+      \field{sortinithash}{9af77f0292593c26bde9a56e688eaee9}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{\textbf{\textit{American Mathematical Monthly}}}
+      \field{number}{9}
+      \field{title}{Rubik's groups}
+      \field{volume}{92}
+      \field{year}{1985}
+      \field{pages}{617\bibrangedash 629}
+      \range{pages}{13}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+
